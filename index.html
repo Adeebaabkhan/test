@@ -54,7 +54,6 @@
             transition: all 0.5s ease;
         }
 
-        /* Animated background particles */
         .bg-particles {
             position: fixed;
             width: 100%;
@@ -78,7 +77,6 @@
             100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
         }
 
-        /* Controls bar */
         .controls-bar {
             position: fixed;
             top: 20px;
@@ -391,7 +389,6 @@
             opacity: 0.8;
         }
 
-        /* Notification */
         .notification {
             position: fixed;
             top: 100px;
@@ -431,7 +428,6 @@
             font-size: 0.95em;
         }
 
-        /* Responsive */
         @media (max-width: 600px) {
             .login-header h1 {
                 font-size: 2.2em;
@@ -453,14 +449,12 @@
     </style>
 </head>
 <body data-theme="light">
-    <!-- Control buttons -->
     <div class="controls-bar">
         <button class="control-btn" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
         <button class="control-btn" id="soundToggle" title="Toggle Sound">🔊</button>
         <button class="control-btn" id="languageToggle" title="Change Language">🇵🇭</button>
     </div>
 
-    <!-- Notification -->
     <div class="notification" id="notification">
         <div class="notification-header">
             <span>🔔</span>
@@ -469,7 +463,6 @@
         <div class="notification-body" id="notificationBody"></div>
     </div>
 
-    <!-- Animated background particles -->
     <div class="bg-particles" id="particles"></div>
 
     <div class="login-container">
@@ -515,7 +508,6 @@
         </form>
     </div>
 
-    <!-- Audio elements -->
     <audio id="clickSound" preload="auto">
         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2Q" type="audio/wav">
     </audio>
@@ -523,12 +515,10 @@
         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2Q" type="audio/wav">
     </audio>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
             authDomain: "maisonetoile-5eee1.firebaseapp.com",
@@ -539,19 +529,17 @@
             appId: "1:902250837280:web:0f61ccce4455ee90fdd345"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // 👑 OWNER ACCOUNT (Hardcoded)
+        // 👑 OWNER ACCOUNT (Hardcoded - Only one owner)
         const owner = {
             username: 'Adeebaabkhan',
-            password: 'owner123',  // CHANGE THIS PASSWORD
+            password: 'owner123',  // ⚠️ CHANGE THIS PASSWORD
             name: 'Adeebaabkhan',
             role: 'owner'
         };
 
-        // Translations
         const translations = {
             en: {
                 appTitle: "Maison Étoile",
@@ -589,12 +577,10 @@
             }
         };
 
-        // Settings
         let currentLanguage = localStorage.getItem('language') || 'en';
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
         let darkMode = localStorage.getItem('darkMode') === 'true';
 
-        // Initialize
         function init() {
             createParticles();
             loadSettings();
@@ -602,7 +588,6 @@
             setupEventListeners();
         }
 
-        // Create animated background particles
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             for (let i = 0; i < 20; i++) {
@@ -617,7 +602,6 @@
             }
         }
 
-        // Load settings
         function loadSettings() {
             if (darkMode) {
                 document.body.setAttribute('data-theme', 'dark');
@@ -629,7 +613,6 @@
             updateLanguage();
         }
 
-        // Check for saved login
         function checkSavedLogin() {
             const savedUsername = localStorage.getItem('rememberedUsername');
             const rememberMe = localStorage.getItem('rememberMe') === 'true';
@@ -641,7 +624,6 @@
             }
         }
 
-        // Setup event listeners
         function setupEventListeners() {
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
             document.getElementById('soundToggle').addEventListener('click', toggleSound);
