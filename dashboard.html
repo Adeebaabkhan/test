@@ -1697,6 +1697,9 @@
     </div>
 
     <script>
+        // =================== APP CONFIGURATION ===================
+        const APP_NAME = 'sales-tracker'; // Unique name for Sales Tracker app
+
         // =================== FIREBASE CONFIGURATION ===================
         const firebaseConfig = {
             apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
@@ -1710,7 +1713,13 @@
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        console.log('✅ Firebase initialized');
+        
+        // Helper function to get app-specific database reference
+        function getRef(path) {
+            return database.ref(APP_NAME + '/' + path);
+        }
+        
+        console.log('✅ Firebase initialized for app:', APP_NAME);
 
         // =================== DATA MANAGEMENT ===================
         let currentSession = null;
