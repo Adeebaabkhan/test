@@ -4,13 +4,13 @@ import { getDatabase, ref, get, set, update, push, remove, onValue } from 'https
 
 // Firebase Configuration - REPLACE WITH YOUR CONFIG
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "your-app-id"
+    apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
+    authDomain: "maisonetoile-5eee1.firebaseapp.com",
+    databaseURL: "https://maisonetoile-5eee1-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "maisonetoile-5eee1",
+    storageBucket: "maisonetoile-5eee1.firebasestorage.app",
+    messagingSenderId: "902250837280",
+    appId: "1:902250837280:web:0f61ccce4455ee90fdd345"
 };
 
 // Initialize Firebase
