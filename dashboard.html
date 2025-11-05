@@ -1772,7 +1772,7 @@
 
         function loadAllData() {
             // Load users
-            database.ref('users').on('value', (snapshot) => {
+            getRef('users').on('value', (snapshot) => {
                 const usersData = snapshot.val() || {};
                 users = Object.values(usersData);
                 
@@ -1788,7 +1788,7 @@
             });
 
             // Load products
-            database.ref('products').on('value', (snapshot) => {
+            getRef('products').on('value', (snapshot) => {
                 const productsData = snapshot.val() || {};
                 products = Object.values(productsData);
                 console.log('✅ Products loaded:', products.length);
@@ -1797,7 +1797,7 @@
             });
 
             // Load sales
-            database.ref('sales').on('value', (snapshot) => {
+            getRef('sales').on('value', (snapshot) => {
                 const salesData = snapshot.val() || {};
                 sales = [];
                 
@@ -1815,7 +1815,7 @@
             });
 
             // Load payouts
-            database.ref('payouts').on('value', (snapshot) => {
+            getRef('payouts').on('value', (snapshot) => {
                 const payData = snapshot.val() || {};
                 payouts = Object.values(payData);
                 renderPayoutList();
@@ -1823,7 +1823,7 @@
             });
 
             // Load settings
-            database.ref('settings/' + currentUsername).once('value').then((snapshot) => {
+            getRef('settings/' + currentUsername).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     settings = snapshot.val();
                 }
@@ -1835,7 +1835,7 @@
             settings.theme = document.getElementById('themeSelect').value;
             settings.lowStockThreshold = parseInt(document.getElementById('lowStockThreshold').value);
             
-            database.ref('settings/' + currentUsername).set(settings)
+            getRef('settings/' + currentUsername).set(settings)
                 .then(() => {
                     applySettings();
                     showToast('✅ Settings saved!', 'success');
@@ -1956,12 +1956,11 @@
                 buyPrice: buyPrice,
                 sellPrice: sellPrice,
                 margin: parseFloat(margin.toFixed(2)),
-                // NO COMMISSION FIELD - Each admin has their own profit %
                 createdDate: new Date().toISOString().split('T')[0],
                 createdBy: currentSession.customName
             };
             
-            database.ref('products/' + newProduct.id).set(newProduct)
+            getRef('products/' + newProduct.id).set(newProduct)
                 .then(() => {
                     document.getElementById('addProductForm').reset();
                     document.getElementById('productNameSelect').value = '';
@@ -1982,7 +1981,7 @@
             }
             
             if (confirm('Delete this product?')) {
-                database.ref('products/' + productId).remove()
+                getRef('products/' + productId).remove()
                     .then(() => {
                         showToast('🗑️ Product deleted', 'info');
                     })
@@ -2009,7 +2008,7 @@
             document.getElementById('newSellPrice').value = product.sellPrice;
             
             autoCalculateProductFields();
-            database.ref('products/' + productId).remove();
+            getRef('products/' + productId).remove();
             
             document.getElementById('productModal').scrollTo({ top: 0, behavior: 'smooth' });
             showToast('📝 Edit mode - Update product and save', 'info');
@@ -2190,7 +2189,7 @@
                 id: Date.now(),
                 userId: currentSession.id,
                 userName: currentSession.customName,
-                userCommissionPercent: userCommissionPercent, // Store the rate used
+                userCommissionPercent: userCommissionPercent,
                 date: new Date().toISOString().split('T')[0],
                 productId: productId,
                 product: product.name,
@@ -2205,7 +2204,7 @@
             };
             
             const userKey = currentUsername.replace(/[.#$/[\]]/g, '_');
-            database.ref('sales/' + userKey + '/' + newSale.id).set(newSale)
+            getRef('sales/' + userKey + '/' + newSale.id).set(newSale)
                 .then(() => {
                     document.getElementById('addSaleForm').reset();
                     document.getElementById('productDetailsCard').style.display = 'none';
@@ -2235,7 +2234,7 @@
                     const existingPayout = payouts.find(p => p.userId === user.id && p.status === 'pending');
                     
                     if (existingPayout) {
-                        database.ref('payouts/' + existingPayout.id).update({
+                        getRef('payouts/' + existingPayout.id).update({
                             amount: totalCommission,
                             date: new Date().toISOString().split('T')[0]
                         });
@@ -2248,7 +2247,7 @@
                             date: new Date().toISOString().split('T')[0],
                             status: 'pending'
                         };
-                        database.ref('payouts/' + payout.id).set(payout);
+                        getRef('payouts/' + payout.id).set(payout);
                     }
                 }
             });
@@ -2256,7 +2255,7 @@
 
         // =================== PAYOUT MANAGEMENT ===================
         function markPaid(payoutId) {
-            database.ref('payouts/' + payoutId).update({ status: 'paid' })
+            getRef('payouts/' + payoutId).update({ status: 'paid' })
                 .then(() => {
                     showToast('✅ Marked as paid!', 'success');
                 })
@@ -2298,7 +2297,7 @@
                 if (!sale) return;
                 
                 const userKey = sale.userName.replace(/[.#$/[\]]/g, '_');
-                database.ref('sales/' + userKey + '/' + id).remove()
+                getRef('sales/' + userKey + '/' + id).remove()
                     .then(() => {
                         showToast('🗑️ Sale deleted', 'info');
                         autoCalculatePayouts();
@@ -2317,7 +2316,7 @@
             sale.sold = !sale.sold;
             
             const userKey = sale.userName.replace(/[.#$/[\]]/g, '_');
-            database.ref('sales/' + userKey + '/' + id).update({ sold: sale.sold })
+            getRef('sales/' + userKey + '/' + id).update({ sold: sale.sold })
                 .then(() => {
                     showToast(sale.sold ? '✅ Marked as sold!' : '📦 Marked as in stock', 'success');
                     autoCalculatePayouts();
@@ -2350,7 +2349,7 @@
             
             const username = document.getElementById('newUsername').value.trim();
             
-            database.ref('users/' + username).once('value')
+            getRef('users/' + username).once('value')
                 .then((snapshot) => {
                     if (snapshot.exists()) {
                         showToast('❌ Username already exists!', 'error');
@@ -2367,7 +2366,7 @@
                         createdDate: new Date().toISOString().split('T')[0]
                     };
 
-                    return database.ref('users/' + username).set(newUser);
+                    return getRef('users/' + username).set(newUser);
                 })
                 .then(() => {
                     document.getElementById('addUserForm').reset();
@@ -2386,14 +2385,14 @@
                 const user = users.find(u => u.id === userId);
                 if (!user) return;
                 
-                database.ref('users/' + user.username).remove()
+                getRef('users/' + user.username).remove()
                     .then(() => {
-                        return database.ref('payouts').orderByChild('userId').equalTo(userId).once('value');
+                        return getRef('payouts').orderByChild('userId').equalTo(userId).once('value');
                     })
                     .then((snapshot) => {
                         const deletePromises = [];
                         snapshot.forEach((child) => {
-                            deletePromises.push(database.ref('payouts/' + child.key).remove());
+                            deletePromises.push(getRef('payouts/' + child.key).remove());
                         });
                         return Promise.all(deletePromises);
                     })
@@ -2492,7 +2491,6 @@
                 const mySales = soldItems.filter(s => s.userId === currentSession.id);
                 myEarnings = mySales.reduce((sum, s) => sum + ((s.commission || 0) * s.quantity), 0);
             } else {
-                // Owner earnings = total sales - all admin commissions
                 const allAdminCommissions = soldItems.reduce((sum, s) => {
                     if (s.userId !== currentSession.id) {
                         return sum + ((s.commission || 0) * s.quantity);
@@ -2507,7 +2505,7 @@
             document.getElementById('itemsSold').textContent = itemsSold;
             document.getElementById('avgSale').textContent = '₱' + avgSale.toFixed(2);
             document.getElementById('myEarnings').textContent = '₱' + myEarnings.toFixed(2);
-            document.getElementById('profitRate').textContent = currentSession.profitPercent + '%';
+            document.getElementById('profitRate').textContent = (currentSession.profitPercent || 100) + '%';
         }
 
         function renderSalesTable() {
@@ -2663,7 +2661,7 @@
             }
             
             const userKey = currentUsername.replace(/[.#$/[\]]/g, '_');
-            database.ref('sales/' + userKey).remove()
+            getRef('sales/' + userKey).remove()
                 .then(() => {
                     showToast('🗑️ All data cleared!', 'info');
                     autoCalculatePayouts();
@@ -2671,6 +2669,41 @@
                 .catch((error) => {
                     showToast('❌ Error: ' + error.message, 'error');
                 });
+        }
+
+        // =================== RESET ALL DATA ===================
+        function resetAllData() {
+            if (currentSession.role !== 'owner') {
+                showToast('❌ Only owner can reset data', 'error');
+                return;
+            }
+            
+            if (!confirm('⚠️ WARNING: Delete ALL products, sales, and payouts?\n\nThis will reset everything to zero!')) {
+                return;
+            }
+            
+            const confirmation = prompt('Type "RESET" to confirm:');
+            if (confirmation !== 'RESET') {
+                showToast('❌ Reset cancelled', 'info');
+                return;
+            }
+            
+            showToast('🔄 Resetting all data...', 'info');
+            
+            Promise.all([
+                getRef('sales').remove(),
+                getRef('products').remove(),
+                getRef('payouts').remove()
+            ])
+            .then(() => {
+                showToast('✅ All data reset! Reloading...', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            })
+            .catch((error) => {
+                showToast('❌ Error: ' + error.message, 'error');
+            });
         }
 
         // =================== CALCULATOR ===================
@@ -2756,7 +2789,7 @@
                 const currentIndex = themes.indexOf(settings.theme);
                 settings.theme = themes[(currentIndex + 1) % themes.length];
                 applySettings();
-                database.ref('settings/' + currentUsername).set(settings);
+                getRef('settings/' + currentUsername).set(settings);
                 showToast('🎨 Theme changed!', 'success');
             });
             
@@ -2767,14 +2800,14 @@
             document.getElementById('btnDark').addEventListener('click', () => {
                 settings.darkMode = !settings.darkMode;
                 applySettings();
-                database.ref('settings/' + currentUsername).set(settings);
+                getRef('settings/' + currentUsername).set(settings);
                 showToast(settings.darkMode ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'info');
             });
             
             document.getElementById('toggleDarkMode').addEventListener('click', () => {
                 settings.darkMode = !settings.darkMode;
                 applySettings();
-                database.ref('settings/' + currentUsername).set(settings);
+                getRef('settings/' + currentUsername).set(settings);
             });
             
             document.getElementById('btnLogout').addEventListener('click', () => {
