@@ -3,197 +3,831 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Tracker System</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Maison Etoile - Login ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-mid: #764ba2;
+            --bg-gradient-end: #f093fb;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #6B21A8;
+            --text-secondary: #8B5CF6;
+            --input-bg: #FAF5FF;
+            --input-border: #E9D5FF;
+            --header-gradient-start: #667eea;
+            --header-gradient-end: #764ba2;
+            --shadow-color: rgba(139, 92, 246, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-mid: #16213e;
+            --bg-gradient-end: #0f3460;
+            --card-bg: rgba(30, 30, 46, 0.98);
+            --text-primary: #E9D5FF;
+            --text-secondary: #C4B5FD;
+            --input-bg: #1e1e2e;
+            --input-border: #3f3f5f;
+            --header-gradient-start: #6366f1;
+            --header-gradient-end: #8b5cf6;
+            --shadow-color: rgba(99, 102, 241, 0.5);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+            transition: all 0.5s ease;
+        }
+
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Controls bar */
+        .controls-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 3px solid var(--input-border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 25px var(--shadow-color);
+        }
+
+        .control-btn:active {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            box-shadow: 0 30px 90px var(--shadow-color);
+            overflow: visible;
+            max-width: 480px;
+            width: 100%;
+            animation: slideUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            z-index: 1;
+            transition: all 0.5s ease;
+            margin: 40px auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(80px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px 40px 0 0;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .login-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .login-header h1 {
+            font-size: 3em;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
+            font-weight: 900;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .login-header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .login-form {
+            padding: 50px 40px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3em;
+            color: var(--text-secondary);
+            z-index: 1;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3em;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .password-toggle:hover {
+            transform: translateY(-50%) scale(1.2);
+            color: var(--text-primary);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 18px 55px 18px 55px;
+            border: 3px solid var(--input-border);
+            border-radius: 25px;
+            font-size: 1.05em;
+            font-family: 'Poppins', sans-serif;
+            background: var(--input-bg);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--text-secondary);
+            box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--text-secondary);
+        }
+
+        .remember-me label {
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            margin: 0;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 22px;
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px var(--shadow-color);
+        }
+
+        .btn-login:active {
+            transform: translateY(-2px);
+        }
+
+        .error-message, .welcome-message {
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            display: none;
+            font-weight: 700;
+            animation: slideDown 0.5s;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFD0D0 100%);
+            color: #991B1B;
+            border-left: 6px solid #DC2626;
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+            border-left: 6px solid #10B981;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer-text {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 30px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-login.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            animation: slideInRight 0.5s ease;
+            max-width: 350px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #8B5CF6;
+        }
+
+        .notification-body {
+            color: #6B21A8;
+            font-size: 0.95em;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .login-header h1 {
+                font-size: 2.2em;
+            }
+            .login-form {
+                padding: 40px 30px;
+            }
+            .controls-bar {
+                top: 10px;
+                right: 10px;
+                gap: 10px;
+            }
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3em;
+            }
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <h1>📊 Sales Tracker</h1>
-                <span class="user-info" id="userInfo"></span>
-            </div>
-            <div class="header-right">
-                <select id="themeSelector" class="theme-selector">
-                    <option value="light-blue">���� Light Blue</option>
-                    <option value="deep-blue">🌊 Deep Blue</option>
-                    <option value="rose-pink">🌸 Rose Pink</option>
-                    <option value="violet">💜 Violet</option>
-                    <option value="teal">🐚 Teal</option>
-                    <option value="coral">🪸 Coral</option>
-                    <option value="mint-green">🍃 Mint Green</option>
-                    <option value="red">❤️ Red</option>
-                    <option value="dark-purple">🔮 Dark Purple</option>
-                    <option value="rainbow">🌈 Rainbow</option>
-                    <option value="ocean">🌊 Ocean</option>
-                    <option value="sunset">🌅 Sunset</option>
-                    <option value="forest">🌲 Forest</option>
-                    <option value="lavender">💐 Lavender</option>
-                    <option value="gold">✨ Gold</option>
-                </select>
-                <button id="logoutBtn" class="btn btn-danger">Logout</button>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <nav class="tabs">
-            <button class="tab active" data-tab="sales">💰 Sales</button>
-            <button class="tab" data-tab="products">📦 Products</button>
-            <button class="tab" data-tab="users" id="usersTab">👥 Users</button>
-            <button class="tab" data-tab="analytics">📊 Analytics</button>
-            <button class="tab" data-tab="payouts">💸 Payouts</button>
-        </nav>
-
-        <!-- Sales Tab -->
-        <div id="salesTab" class="tab-content active">
-            <div class="section">
-                <h2>Record New Sale</h2>
-                <form id="saleForm" class="form">
-                    <select id="productSelect" required>
-                        <option value="">Select Product</option>
-                    </select>
-                    <input type="text" id="accountSold" placeholder="Account Email/Username" required>
-                    <button type="submit" class="btn btn-primary">Record Sale</button>
-                </form>
-            </div>
-
-            <div class="section">
-                <h2>Recent Sales</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Sales</h3>
-                        <p class="stat-value" id="totalSales">$0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Your Commission</h3>
-                        <p class="stat-value" id="yourCommission">$0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Sales Count</h3>
-                        <p class="stat-value" id="salesCount">0</p>
-                    </div>
-                </div>
-                <div id="salesList" class="sales-list"></div>
-            </div>
-        </div>
-
-        <!-- Products Tab -->
-        <div id="productsTab" class="tab-content">
-            <div class="section" id="addProductSection" style="display: none;">
-                <h2>Add New Product</h2>
-                <form id="productForm" class="form">
-                    <input type="text" id="productName" placeholder="Product Name" required>
-                    <input type="text" id="productEmoji" placeholder="Emoji (e.g., 🎬)" required>
-                    <select id="productCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="solo">👤 Solo</option>
-                        <option value="shared">🤝 Shared</option>
-                        <option value="other">📦 Other</option>
-                    </select>
-                    <input type="number" id="productPrice" placeholder="Price ($)" step="0.01" required>
-                    <input type="number" id="productStock" placeholder="Initial Stock" required>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
-                </form>
-            </div>
-
-            <div class="section">
-                <h2>Available Products</h2>
-                <div id="productsList" class="products-grid"></div>
-            </div>
-        </div>
-
-        <!-- Users Tab -->
-        <div id="usersTab" class="tab-content">
-            <div class="section" id="addUserSection" style="display: none;">
-                <h2>Add New User</h2>
-                <form id="userForm" class="form">
-                    <input type="email" id="userEmail" placeholder="Email" required>
-                    <input type="password" id="userPassword" placeholder="Password (min 6 characters)" minlength="6" required>
-                    <input type="text" id="userName" placeholder="Full Name" required>
-                    <select id="userRole" required>
-                        <option value="">Select Role</option>
-                        <option value="admin">👑 Admin</option>
-                        <option value="user">👤 User</option>
-                    </select>
-                    <input type="number" id="userCommission" placeholder="Commission %" min="0" max="100" step="0.1" required>
-                    <button type="submit" class="btn btn-primary">Add User</button>
-                </form>
-            </div>
-
-            <div class="section">
-                <h2>All Users</h2>
-                <div id="usersList" class="users-list"></div>
-            </div>
-        </div>
-
-        <!-- Analytics Tab -->
-        <div id="analyticsTab" class="tab-content">
-            <div class="section">
-                <h2>Sales Analytics</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Today's Sales</h3>
-                        <p class="stat-value" id="todaySales">$0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>This Week</h3>
-                        <p class="stat-value" id="weekSales">$0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>This Month</h3>
-                        <p class="stat-value" id="monthSales">$0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>All Time</h3>
-                        <p class="stat-value" id="allTimeSales">$0</p>
-                    </div>
-                </div>
-                <canvas id="salesChart"></canvas>
-            </div>
-
-            <div class="section">
-                <h2>Top Products</h2>
-                <div id="topProducts"></div>
-            </div>
-
-            <div class="section">
-                <h2>User Performance</h2>
-                <div id="userPerformance"></div>
-            </div>
-        </div>
-
-        <!-- Payouts Tab -->
-        <div id="payoutsTab" class="tab-content">
-            <div class="section">
-                <h2>Pending Payouts</h2>
-                <div id="pendingPayouts"></div>
-            </div>
-
-            <div class="section">
-                <h2>Payout History</h2>
-                <div id="payoutHistory"></div>
-            </div>
-        </div>
+<body data-theme="light">
+    <!-- Control buttons -->
+    <div class="controls-bar">
+        <button class="control-btn" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
+        <button class="control-btn" id="soundToggle" title="Toggle Sound">🔊</button>
+        <button class="control-btn" id="languageToggle" title="Change Language">🇵🇭</button>
     </div>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- App Scripts -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/themes.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/products.js"></script>
-    <script src="js/users.js"></script>
-    <script src="js/sales.js"></script>
-    <script src="js/analytics.js"></script>
-    <script src="js/app.js"></script>
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-header">
+            <span>🔔</span>
+            <span id="notificationTitle">Notification</span>
+        </div>
+        <div class="notification-body" id="notificationBody"></div>
+    </div>
+
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="particles"></div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-icon">✨</div>
+            <h1 data-translate="appTitle">Maison Étoile</h1>
+            <p data-translate="appSubtitle">Sales Tracker System</p>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <div class="welcome-message" id="welcomeMessage"></div>
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="form-group">
+                <label for="username" data-translate="usernameLabel">👤 Username</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="username" data-translate-placeholder="usernamePlaceholder" placeholder="Enter your username" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" data-translate="passwordLabel">🔒 Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" data-translate-placeholder="passwordPlaceholder" placeholder="Enter your password" required autocomplete="current-password">
+                    <span class="password-toggle" id="passwordToggle">👁️</span>
+                </div>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe" checked>
+                <label for="rememberMe" data-translate="rememberMe">💾 Remember me on this device</label>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <span data-translate="loginButton">Login to Dashboard</span>
+            </button>
+
+            <div class="footer-text">
+                <span data-translate="footerText">🔒 Secure Login • 🌟 Data Saved to Cloud</span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2Q" type="audio/wav">
+    </audio>
+    <audio id="successSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2Q" type="audio/wav">
+    </audio>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
+            authDomain: "maisonetoile-5eee1.firebaseapp.com",
+            databaseURL: "https://maisonetoile-5eee1-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "maisonetoile-5eee1",
+            storageBucket: "maisonetoile-5eee1.firebasestorage.app",
+            messagingSenderId: "902250837280",
+            appId: "1:902250837280:web:0f61ccce4455ee90fdd345"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 👑 OWNER ACCOUNT (Hardcoded)
+        const owner = {
+            username: 'Adeebaabkhan',
+            password: 'owner123',  // CHANGE THIS PASSWORD
+            name: 'Adeebaabkhan',
+            role: 'owner'
+        };
+
+        // Translations
+        const translations = {
+            en: {
+                appTitle: "Maison Étoile",
+                appSubtitle: "Sales Tracker System",
+                usernameLabel: "👤 Username",
+                usernamePlaceholder: "Enter your username",
+                passwordLabel: "🔒 Password",
+                passwordPlaceholder: "Enter your password",
+                rememberMe: "💾 Remember me on this device",
+                loginButton: "Login to Dashboard",
+                footerText: "🔒 Secure Login • 🌟 Data Saved to Cloud",
+                welcomeBack: "Welcome back",
+                invalidCredentials: "❌ Invalid username or password. Please try again!",
+                loggingIn: "Logging in...",
+                successRedirecting: "✅ Success! Redirecting...",
+                notificationTitle: "Welcome!",
+                notificationBody: "You have successfully logged in to Maison Étoile"
+            },
+            ph: {
+                appTitle: "Maison Étoile",
+                appSubtitle: "Sistema ng Sales Tracker",
+                usernameLabel: "👤 Username",
+                usernamePlaceholder: "Ilagay ang iyong username",
+                passwordLabel: "🔒 Password",
+                passwordPlaceholder: "Ilagay ang iyong password",
+                rememberMe: "💾 Tandaan ako sa device na ito",
+                loginButton: "Mag-login sa Dashboard",
+                footerText: "🔒 Secure na Login • 🌟 Naka-save sa Cloud",
+                welcomeBack: "Maligayang pagbabalik",
+                invalidCredentials: "❌ Mali ang username o password. Subukan ulit!",
+                loggingIn: "Naglo-login...",
+                successRedirecting: "✅ Tagumpay! Nagre-redirect...",
+                notificationTitle: "Maligayang Pagdating!",
+                notificationBody: "Matagumpay kang nag-login sa Maison Étoile"
+            }
+        };
+
+        // Settings
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+
+        // Initialize
+        function init() {
+            createParticles();
+            loadSettings();
+            checkSavedLogin();
+            setupEventListeners();
+        }
+
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 100 + 50 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Load settings
+        function loadSettings() {
+            if (darkMode) {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('darkModeToggle').textContent = '☀️';
+            }
+            if (!soundEnabled) {
+                document.getElementById('soundToggle').textContent = '🔇';
+            }
+            updateLanguage();
+        }
+
+        // Check for saved login
+        function checkSavedLogin() {
+            const savedUsername = localStorage.getItem('rememberedUsername');
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
+
+            if (savedUsername && rememberMe) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('rememberMe').checked = true;
+                showWelcomeMessage(`${translations[currentLanguage].welcomeBack}, ${savedUsername}! 👋`);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+            document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+            document.getElementById('passwordToggle').addEventListener('click', togglePassword);
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            document.querySelectorAll('button, .control-btn').forEach(btn => {
+                btn.addEventListener('click', () => playSound('clickSound'));
+            });
+        }
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+            document.getElementById('darkModeToggle').textContent = darkMode ? '☀️' : '🌙';
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('soundEnabled', soundEnabled);
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) playSound('clickSound');
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'ph' : 'en';
+            localStorage.setItem('language', currentLanguage);
+            document.getElementById('languageToggle').textContent = currentLanguage === 'en' ? '🇵🇭' : '🇬🇧';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const lang = translations[currentLanguage];
+            
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (lang[key]) {
+                    el.textContent = lang[key];
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                if (lang[key]) {
+                    el.placeholder = lang[key];
+                }
+            });
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('passwordToggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        function playSound(soundId) {
+            if (soundEnabled) {
+                const sound = document.getElementById(soundId);
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
+            }
+        }
+
+        function showNotification(title, body) {
+            const notification = document.getElementById('notification');
+            document.getElementById('notificationTitle').textContent = title;
+            document.getElementById('notificationBody').textContent = body;
+            notification.style.display = 'block';
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: '✨',
+                    badge: '✨'
+                });
+            }
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle login - CHECK OWNER FIRST, THEN ADMINS IN FIREBASE
+        function handleLogin(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loginBtn = document.getElementById('loginBtn');
+            const lang = translations[currentLanguage];
+
+            loginBtn.classList.add('loading');
+            loginBtn.innerHTML = `<span class="spinner"></span> ${lang.loggingIn}`;
+
+            // Check if OWNER first
+            if (username === owner.username && password === owner.password) {
+                setTimeout(() => {
+                    loginSuccess(owner.username, owner.name, owner.role, rememberMe, loginBtn, lang);
+                }, 800);
+            } else {
+                // Check Firebase for ADMINS
+                database.ref('admins').child(username).once('value')
+                    .then(snapshot => {
+                        if (snapshot.exists()) {
+                            const admin = snapshot.val();
+                            if (admin.password === password) {
+                                loginSuccess(username, admin.name, 'admin', rememberMe, loginBtn, lang);
+                            } else {
+                                showLoginError(loginBtn, lang);
+                            }
+                        } else {
+                            showLoginError(loginBtn, lang);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Login error:', error);
+                        showLoginError(loginBtn, lang);
+                    });
+            }
+        }
+
+        function loginSuccess(username, name, role, rememberMe, loginBtn, lang) {
+            if (rememberMe) {
+                localStorage.setItem('rememberedUsername', username);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                localStorage.removeItem('rememberedUsername');
+                localStorage.removeItem('rememberMe');
+            }
+
+            sessionStorage.setItem('currentUser', username);
+            sessionStorage.setItem('userName', name);
+            sessionStorage.setItem('userRole', role);
+
+            playSound('successSound');
+            loginBtn.innerHTML = lang.successRedirecting;
+            loginBtn.style.background = 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+
+            showNotification(lang.notificationTitle, lang.notificationBody);
+
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1200);
+        }
+
+        function showLoginError(loginBtn, lang) {
+            loginBtn.classList.remove('loading');
+            loginBtn.innerHTML = `<span data-translate="loginButton">${lang.loginButton}</span>`;
+            showError(lang.invalidCredentials);
+            playSound('clickSound');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const welcomeDiv = document.getElementById('welcomeMessage');
+            welcomeDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 4000);
+        }
+
+        function showWelcomeMessage(message) {
+            const welcomeDiv = document.getElementById('welcomeMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'none';
+            welcomeDiv.textContent = message;
+            welcomeDiv.style.display = 'block';
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
