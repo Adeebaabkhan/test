@@ -9,6 +9,10 @@
     <!-- Multiple Beautiful Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Dancing+Script:wght@400;700&family=Pacifico&family=Great+Vibes&family=Satisfy&family=Cookie&family=Allura&family=Alex+Brush&family=Kaushan+Script&family=Lobster&family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDK - MUST LOAD BEFORE Chart.js -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
@@ -107,6 +111,7 @@
             animation: float 6s ease-in-out infinite;
             opacity: 0.3;
             z-index: 0;
+            pointer-events: none;
         }
 
         body::after {
@@ -118,6 +123,7 @@
             animation: float 5s ease-in-out infinite;
             opacity: 0.3;
             z-index: 0;
+            pointer-events: none;
         }
 
         @keyframes float {
@@ -246,6 +252,10 @@
         .btn-small:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-md);
+        }
+
+        .btn-small:active {
+            transform: translateY(-1px);
         }
 
         /* Header */
@@ -712,6 +722,7 @@
             transform: translateY(-50%);
             font-size: 1.4em;
             color: var(--primary);
+            pointer-events: none;
         }
 
         .filter-btn {
@@ -1125,7 +1136,7 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-purple font-poppins font-dancing">
     <div class="app-container">
         <!-- Top Navigation -->
         <div class="top-nav">
@@ -1487,10 +1498,6 @@
         <span id="toastMessage">Success!</span>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <script>
         // =================== FIREBASE CONFIGURATION ===================
         const firebaseConfig = {
@@ -1506,9 +1513,11 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        console.log('✅ Firebase initialized successfully');
 
         // =================== DATA MANAGEMENT ===================
         let currentSession = null;
+        let currentUsername = '';
         let sales = [];
         let categories = [];
         let subcategories = [];
@@ -1525,11 +1534,11 @@
 
         // =================== INITIALIZATION ===================
         function init() {
+            console.log('🚀 Initializing dashboard...');
             checkAuth();
+            setupEventListeners();
             loadAllData();
             applySettings();
-            updateUI();
-            setupEventListeners();
             addSparkles();
         }
 
@@ -1537,10 +1546,14 @@
         function checkAuth() {
             const session = localStorage.getItem('session');
             if (!session) {
+                console.warn('❌ No session found, redirecting to login...');
                 window.location.href = 'index.html';
                 return;
             }
+            
             currentSession = JSON.parse(session);
+            currentUsername = currentSession.username;
+            console.log('✅ Session found:', currentSession);
             
             // Update UI based on role
             document.getElementById('userName').textContent = currentSession.customName;
@@ -1559,12 +1572,14 @@
 
         // Load All Data from Firebase
         function loadAllData() {
-            // Load users from Firebase
+            console.log('📥 Loading data from Firebase...');
+            
+            // Load users
             database.ref('users').on('value', (snapshot) => {
                 const usersData = snapshot.val() || {};
                 users = Object.values(usersData);
+                console.log('✅ Users loaded:', users.length);
                 
-                // Update user filter dropdown
                 if (currentSession.role === 'owner') {
                     const userFilter = document.getElementById('userFilter');
                     userFilter.innerHTML = '<option value="all">All Admins</option>';
@@ -1576,12 +1591,11 @@
                 }
             });
 
-            // Load sales from Firebase
+            // Load sales
             database.ref('sales').on('value', (snapshot) => {
                 const salesData = snapshot.val() || {};
                 sales = [];
                 
-                // Convert Firebase object to array
                 Object.keys(salesData).forEach(userKey => {
                     const userSales = salesData[userKey];
                     if (userSales) {
@@ -1591,16 +1605,16 @@
                     }
                 });
                 
+                console.log('✅ Sales loaded:', sales.length);
                 updateUI();
             });
 
-            // Load categories from Firebase
+            // Load categories
             database.ref('categories').once('value').then((snapshot) => {
                 const catData = snapshot.val() || {};
                 categories = Object.values(catData);
                 
                 if (categories.length === 0) {
-                    // Initialize default categories
                     categories = [
                         { id: 1, name: 'Streaming Accounts', icon: '🎬' },
                         { id: 2, name: 'Design Tools', icon: '🎨' },
@@ -1612,92 +1626,55 @@
                         { id: 8, name: 'Productivity', icon: '💼' }
                     ];
                     
-                    // Save to Firebase
                     categories.forEach(cat => {
                         database.ref('categories/' + cat.id).set(cat);
                     });
                 }
                 
+                console.log('✅ Categories loaded:', categories.length);
                 updateCategoryDropdowns();
                 renderCategoryList();
             });
 
-            // Load subcategories from Firebase
+            // Load subcategories
             database.ref('subcategories').once('value').then((snapshot) => {
                 const subData = snapshot.val() || {};
                 subcategories = Object.values(subData);
                 
                 if (subcategories.length === 0) {
-                    // Initialize default subcategories
                     subcategories = [
-                        // Streaming Accounts
                         { id: 1, categoryId: 1, name: 'Netflix' },
                         { id: 2, categoryId: 1, name: 'Disney+' },
                         { id: 3, categoryId: 1, name: 'HBO Max' },
-                        { id: 4, categoryId: 1, name: 'Amazon Prime' },
-                        { id: 5, categoryId: 1, name: 'Hulu' },
-                        
-                        // Design Tools
-                        { id: 6, categoryId: 2, name: 'CapCut Pro' },
-                        { id: 7, categoryId: 2, name: 'Canva Pro' },
-                        { id: 8, categoryId: 2, name: 'Adobe Creative Cloud' },
-                        { id: 9, categoryId: 2, name: 'Figma' },
-                        
-                        // Education Premium
-                        { id: 10, categoryId: 3, name: 'Quizlet Plus' },
-                        { id: 11, categoryId: 3, name: 'Duolingo Plus' },
-                        { id: 12, categoryId: 3, name: 'Coursera Plus' },
-                        { id: 13, categoryId: 3, name: 'Udemy' },
-                        
-                        // Music Apps
-                        { id: 14, categoryId: 4, name: 'Spotify Premium' },
-                        { id: 15, categoryId: 4, name: 'Apple Music' },
-                        { id: 16, categoryId: 4, name: 'YouTube Music' },
-                        
-                        // Gaming
-                        {id: 17, categoryId: 5, name: 'Xbox Game Pass' },
-                        { id: 18, categoryId: 5, name: 'PlayStation Plus' },
-                        { id: 19, categoryId: 5, name: 'Nintendo Switch Online' },
-                        { id: 20, categoryId: 5, name: 'Steam' },
-                        
-                        // VPN Services
-                        { id: 21, categoryId: 6, name: 'NordVPN' },
-                        { id: 22, categoryId: 6, name: 'ExpressVPN' },
-                        { id: 23, categoryId: 6, name: 'Surfshark' },
-                        
-                        // Cloud Storage
-                        { id: 24, categoryId: 7, name: 'Google Drive' },
-                        { id: 25, categoryId: 7, name: 'Dropbox' },
-                        { id: 26, categoryId: 7, name: 'OneDrive' },
-                        
-                        // Productivity
-                        { id: 27, categoryId: 8, name: 'Microsoft 365' },
-                        { id: 28, categoryId: 8, name: 'Notion' },
-                        { id: 29, categoryId: 8, name: 'Grammarly' }
+                        { id: 4, categoryId: 2, name: 'CapCut Pro' },
+                        { id: 5, categoryId: 2, name: 'Canva Pro' },
+                        { id: 6, categoryId: 3, name: 'Quizlet Plus' },
+                        { id: 7, categoryId: 4, name: 'Spotify Premium' }
                     ];
                     
-                    // Save to Firebase
                     subcategories.forEach(sub => {
                         database.ref('subcategories/' + sub.id).set(sub);
                     });
                 }
                 
+                console.log('✅ Subcategories loaded:', subcategories.length);
                 renderSubcategoryList();
             });
 
-            // Load payouts from Firebase
+            // Load payouts
             database.ref('payouts').on('value', (snapshot) => {
                 const payData = snapshot.val() || {};
                 payouts = Object.values(payData);
+                console.log('✅ Payouts loaded:', payouts.length);
                 renderPayoutList();
             });
 
-            // Load settings from Firebase
-            const username = currentSession.username;
-            database.ref('settings/' + username).once('value').then((snapshot) => {
+            // Load settings
+            database.ref('settings/' + currentUsername).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     settings = snapshot.val();
                 }
+                console.log('✅ Settings loaded');
                 applySettings();
             });
         }
@@ -1710,9 +1687,7 @@
             settings.language = document.getElementById('languageSelect').value;
             settings.lowStockThreshold = parseInt(document.getElementById('lowStockThreshold').value);
             
-            // Save to Firebase
-            const username = currentSession.username;
-            database.ref('settings/' + username).set(settings)
+            database.ref('settings/' + currentUsername).set(settings)
                 .then(() => {
                     applySettings();
                     updateUI();
@@ -1735,7 +1710,6 @@
                 document.body.classList.add('dark-mode');
             }
             
-            // Update settings UI
             document.getElementById('themeSelect').value = settings.theme;
             document.getElementById('fontSelect').value = settings.font;
             document.getElementById('headingFontSelect').value = settings.headingFont;
@@ -1762,19 +1736,16 @@
                 sold: document.getElementById('productSoldStatus').value === 'yes'
             };
             
-            // Add category and subcategory names for display
             const category = categories.find(c => c.id === newSale.categoryId);
             const subcategory = subcategories.find(s => s.id === newSale.subcategoryId);
             newSale.categoryName = category ? category.name : '';
             newSale.subcategoryName = subcategory ? subcategory.name : '';
             
-            // Save to Firebase
-            const userKey = currentSession.username.replace(/[.#$/[\]]/g, '_');
+            const userKey = currentUsername.replace(/[.#$/[\]]/g, '_');
             database.ref('sales/' + userKey + '/' + newSale.id).set(newSale)
                 .then(() => {
                     document.getElementById('addProductForm').reset();
                     showToast('✅ Product added successfully!', 'success');
-                    updateUI();
                 })
                 .catch((error) => {
                     showToast('❌ Error: ' + error.message, 'error');
@@ -1794,10 +1765,7 @@
             document.getElementById('productPrice').value = sale.price;
             document.getElementById('productSoldStatus').value = sale.sold ? 'yes' : 'no';
             
-            // Delete old entry and prepare for update
             deleteSale(id);
-            
-            // Scroll to form
             document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
             showToast('📝 Edit mode - Update the product and save', 'info');
         }
@@ -1812,7 +1780,6 @@
                 database.ref('sales/' + userKey + '/' + id).remove()
                     .then(() => {
                         showToast('🗑️ Product deleted', 'info');
-                        updateUI();
                     })
                     .catch((error) => {
                         showToast('❌ Error: ' + error.message, 'error');
@@ -1831,7 +1798,6 @@
             database.ref('sales/' + userKey + '/' + id).update({ sold: sale.sold })
                 .then(() => {
                     showToast(sale.sold ? '✅ Marked as sold!' : '📦 Marked as in stock', 'success');
-                    updateUI();
                 })
                 .catch((error) => {
                     showToast('❌ Error: ' + error.message, 'error');
@@ -1847,7 +1813,6 @@
             const categoryName = document.getElementById('categoryName').value.trim();
             const categoryIcon = document.getElementById('categoryIcon').value.trim() || '📦';
             
-            // Check if category already exists
             if (categories.find(c => c.name.toLowerCase() === categoryName.toLowerCase())) {
                 showToast('❌ Category already exists!', 'error');
                 return;
@@ -1859,7 +1824,6 @@
                 icon: categoryIcon
             };
 
-            // Save to Firebase
             database.ref('categories/' + newCategory.id).set(newCategory)
                 .then(() => {
                     categories.push(newCategory);
@@ -1942,7 +1906,6 @@
                 return;
             }
             
-            // Check if subcategory already exists in this category
             if (subcategories.find(s => s.categoryId === categoryId && s.name.toLowerCase() === subcategoryName.toLowerCase())) {
                 showToast('❌ Subcategory already exists in this category!', 'error');
                 return;
@@ -1954,7 +1917,6 @@
                 name: subcategoryName
             };
 
-            // Save to Firebase
             database.ref('subcategories/' + newSubcategory.id).set(newSubcategory)
                 .then(() => {
                     subcategories.push(newSubcategory);
@@ -2030,7 +1992,6 @@
             
             const username = document.getElementById('newUsername').value.trim();
             
-            // Check if username exists in Firebase
             database.ref('users/' + username).once('value')
                 .then((snapshot) => {
                     if (snapshot.exists()) {
@@ -2048,7 +2009,6 @@
                         createdDate: new Date().toISOString().split('T')[0]
                     };
 
-                    // Save to Firebase
                     return database.ref('users/' + username).set(newUser);
                 })
                 .then(() => {
@@ -2069,10 +2029,8 @@
                 const user = users.find(u => u.id === userId);
                 if (!user) return;
                 
-                // Delete from Firebase
                 database.ref('users/' + user.username).remove()
                     .then(() => {
-                        // Also remove their payouts
                         return database.ref('payouts').orderByChild('userId').equalTo(userId).once('value');
                     })
                     .then((snapshot) => {
@@ -2111,7 +2069,6 @@
                 status: 'pending'
             };
             
-            // Save to Firebase
             database.ref('payouts/' + payout.id).set(payout)
                 .then(() => {
                     showToast('✅ Payout calculated: ₱' + payoutAmount.toFixed(2), 'success');
@@ -2211,18 +2168,15 @@
             
             let filtered = sales;
             
-            // Filter by user if not owner
             if (currentSession.role === 'admin') {
                 filtered = filtered.filter(s => s.userId === currentSession.id);
             } else {
-                // Owner: filter by selected user
                 const selectedUserId = document.getElementById('userFilter').value;
                 if (selectedUserId !== 'all') {
                     filtered = filtered.filter(s => s.userId === parseInt(selectedUserId));
                 }
             }
             
-            // Filter by period
             if (activePeriod === 'today') {
                 filtered = filtered.filter(s => {
                     const saleDate = new Date(s.date);
@@ -2247,23 +2201,20 @@
             const filtered = getFilteredSales();
             const soldItems = filtered.filter(s => s.sold);
             
-            // Calculate totals
             const totalSales = soldItems.reduce((sum, s) => sum + (s.price * s.quantity), 0);
             const totalProducts = filtered.reduce((sum, s) => sum + s.quantity, 0);
             const itemsSold = soldItems.reduce((sum, s) => sum + s.quantity, 0);
             const avgSale = soldItems.length > 0 ? totalSales / soldItems.length : 0;
             
-            // Calculate user earnings
             let myEarnings = 0;
             if (currentSession.role === 'admin') {
                 const mySales = soldItems.filter(s => s.userId === currentSession.id);
                 const mySalesTotal = mySales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
                 myEarnings = (mySalesTotal * currentSession.profitPercent) / 100;
             } else {
-                myEarnings = totalSales; // Owner gets all
+                myEarnings = totalSales;
             }
             
-            // Update UI
             document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
             document.getElementById('totalProducts').textContent = totalProducts;
             document.getElementById('itemsSold').textContent = itemsSold;
@@ -2277,7 +2228,6 @@
             const tbody = document.getElementById('salesTableBody');
             const filtered = getFilteredSales();
             
-            // Apply search filter
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             let displaySales = filtered;
             
@@ -2289,8 +2239,7 @@
                 );
             }
             
-            // Apply sold/stock filter
-            const activeFilter = document.querySelector('.filter-btn.active').id;
+            const activeFilter = document.querySelector('.filter-btn.active') ? document.querySelector('.filter-btn.active').id : 'filterAll';
             if (activeFilter === 'filterSold') {
                 displaySales = displaySales.filter(s => s.sold);
             } else if (activeFilter === 'filterStock') {
@@ -2340,14 +2289,12 @@
             const filtered = getFilteredSales();
             const soldItems = filtered.filter(s => s.sold);
             
-            // Sales Chart Data
             const dates = [...new Set(soldItems.map(s => s.date))].sort();
             const salesByDate = dates.map(date => {
                 const daySales = soldItems.filter(s => s.date === date);
                 return daySales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
             });
             
-            // Category Chart Data
             const categoryStats = categories.map(cat => {
                 const catSales = soldItems.filter(s => s.categoryId === cat.id);
                 return {
@@ -2356,7 +2303,6 @@
                 };
             }).filter(c => c.value > 0);
             
-            // Render Sales Chart
             const salesCtx = document.getElementById('salesChart');
             if (window.salesChart) window.salesChart.destroy();
             window.salesChart = new Chart(salesCtx, {
@@ -2382,7 +2328,6 @@
                 }
             });
             
-            // Render Category Chart
             const categoryCtx = document.getElementById('categoryChart');
             if (window.categoryChart) window.categoryChart.destroy();
             window.categoryChart = new Chart(categoryCtx, {
@@ -2436,15 +2381,12 @@
                 return;
             }
             
-            // CSV Header
             let csv = 'Date,Admin,Product,Category,Subcategory,Quantity,Price,Total,Sold\n';
             
-            // CSV Rows
             filtered.forEach(sale => {
                 csv += `${sale.date},${sale.userName},"${sale.product}",${sale.categoryName},${sale.subcategoryName},${sale.quantity},${sale.price},${(sale.price * sale.quantity).toFixed(2)},${sale.sold ? 'Yes' : 'No'}\n`;
             });
             
-            // Download
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -2463,22 +2405,16 @@
                 return;
             }
             
-            if (!confirm('This action CANNOT be undone. Type YES in the next prompt to confirm.')) {
-                return;
-            }
-            
             const confirmation = prompt('Type "DELETE ALL" to confirm deletion:');
             if (confirmation !== 'DELETE ALL') {
                 showToast('❌ Deletion cancelled', 'info');
                 return;
             }
             
-            // Clear sales from Firebase
-            const userKey = currentSession.username.replace(/[.#$/[\]]/g, '_');
+            const userKey = currentUsername.replace(/[.#$/[\]]/g, '_');
             database.ref('sales/' + userKey).remove()
                 .then(() => {
                     showToast('🗑️ All data cleared!', 'info');
-                    updateUI();
                 })
                 .catch((error) => {
                     showToast('❌ Error: ' + error.message, 'error');
@@ -2488,7 +2424,8 @@
         // =================== EVENT LISTENERS ===================
         
         function setupEventListeners() {
-            // Period Tabs
+            console.log('🔗 Setting up event listeners...');
+            
             document.querySelectorAll('.period-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
@@ -2497,7 +2434,6 @@
                 });
             });
             
-            // Form Tabs
             document.querySelectorAll('.form-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
@@ -2507,31 +2443,25 @@
                 });
             });
             
-            // Category change - update subcategories
             document.getElementById('productCategory').addEventListener('change', updateSubcategoryOptions);
-            
-            // Search
             document.getElementById('searchInput').addEventListener('input', renderSalesTable);
-            
-            // User filter (owner only)
             document.getElementById('userFilter').addEventListener('change', updateUI);
             
-            // Filter buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (this.id === 'filterAll' || this.id === 'filterSold' || this.id === 'filterStock') {
-                        document.querySelectorAll('.filter-btn').forEach(b => {
-                            if (b.id === 'filterAll' || b.id === 'filterSold' || b.id === 'filterStock') {
-                                b.classList.remove('active');
-                            }
+            const filterButtons = ['filterAll', 'filterSold', 'filterStock'];
+            filterButtons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        filterButtons.forEach(id => {
+                            const b = document.getElementById(id);
+                            if (b) b.classList.remove('active');
                         });
                         this.classList.add('active');
                         renderSalesTable();
-                    }
-                });
+                    });
+                }
             });
             
-            // Top nav buttons
             document.getElementById('btnUsers').addEventListener('click', () => {
                 document.getElementById('userModal').classList.add('show');
                 renderUserList();
@@ -2543,8 +2473,7 @@
                 const currentIndex = themes.indexOf(settings.theme);
                 settings.theme = themes[(currentIndex + 1) % themes.length];
                 applySettings();
-                const username = currentSession.username;
-                database.ref('settings/' + username).set(settings);
+                database.ref('settings/' + currentUsername).set(settings);
                 showToast('🎨 Theme changed!', 'success');
             });
             
@@ -2555,23 +2484,20 @@
             document.getElementById('btnDark').addEventListener('click', () => {
                 settings.darkMode = !settings.darkMode;
                 applySettings();
-                const username = currentSession.username;
-                database.ref('settings/' + username).set(settings);
+                database.ref('settings/' + currentUsername).set(settings);
                 showToast(settings.darkMode ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'info');
             });
             
             document.getElementById('toggleDarkMode').addEventListener('click', () => {
                 settings.darkMode = !settings.darkMode;
                 applySettings();
-                const username = currentSession.username;
-                database.ref('settings/' + username).set(settings);
+                database.ref('settings/' + currentUsername).set(settings);
             });
             
             document.getElementById('btnLang').addEventListener('click', () => {
                 settings.language = settings.language === 'en' ? 'tl' : 'en';
                 applySettings();
-                const username = currentSession.username;
-                database.ref('settings/' + username).set(settings);
+                database.ref('settings/' + currentUsername).set(settings);
                 showToast(settings.language === 'en' ? '🌐 English' : '🌐 Tagalog', 'info');
             });
             
@@ -2584,6 +2510,8 @@
             
             document.getElementById('btnClearAll').addEventListener('click', clearAllData);
             document.getElementById('btnExport').addEventListener('click', exportToCSV);
+            
+            console.log('✅ Event listeners set up successfully');
         }
 
         // =================== MODAL FUNCTIONS ===================
@@ -2596,7 +2524,6 @@
             document.getElementById('settingsModal').classList.remove('show');
         }
 
-        // Close modals on outside click
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -2647,7 +2574,10 @@
 
         // =================== INITIALIZE APP ===================
         
-        window.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM Content Loaded - Starting initialization...');
+            init();
+        });
     </script>
 </body>
 </html>
