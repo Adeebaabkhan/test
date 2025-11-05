@@ -303,7 +303,7 @@
             font-weight: 600;
         }
 
-        /* Period Filter Tabs */
+        /* Period Tabs */
         .period-tabs {
             display: flex;
             gap: 10px;
@@ -511,6 +511,7 @@
             gap: 10px;
             font-family: var(--font-heading);
         }
+
         /* Form Section */
         .form-section {
             background: var(--card-bg);
@@ -1320,6 +1321,7 @@
                 <div id="subcategoryList"></div>
             </div>
         </div>
+
         <!-- Sales Table -->
         <div class="table-section">
             <div class="section-title">📋 Sales History</div>
@@ -1484,8 +1486,28 @@
         <span class="toast-icon" id="toastIcon">✓</span>
         <span id="toastMessage">Success!</span>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
-        // ==================== DATA MANAGEMENT ====================
+        // =================== FIREBASE CONFIGURATION ===================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
+            authDomain: "maisonetoile-5eee1.firebaseapp.com",
+            databaseURL: "https://maisonetoile-5eee1-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "maisonetoile-5eee1",
+            storageBucket: "maisonetoile-5eee1.firebasestorage.app",
+            messagingSenderId: "902250837280",
+            appId: "1:902250837280:web:7e447abb2d81da65fdd345"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // =================== DATA MANAGEMENT ===================
         let currentSession = null;
         let sales = [];
         let categories = [];
@@ -1501,7 +1523,7 @@
             lowStockThreshold: 5
         };
 
-        // ==================== INITIALIZATION ====================
+        // =================== INITIALIZATION ===================
         function init() {
             checkAuth();
             loadAllData();
@@ -1535,246 +1557,291 @@
             }
         }
 
-        // Load All Data
+        // Load All Data from Firebase
         function loadAllData() {
-            sales = JSON.parse(localStorage.getItem('sales') || '[]');
-            categories = JSON.parse(localStorage.getItem('categories') || '[]');
-            subcategories = JSON.parse(localStorage.getItem('subcategories') || '[]');
-            users = JSON.parse(localStorage.getItem('users') || '[]');
-            payouts = JSON.parse(localStorage.getItem('payouts') || '[]');
-            settings = JSON.parse(localStorage.getItem('settings') || JSON.stringify(settings));
-            
-            // Initialize default categories if empty
-// Initialize default categories if empty
-if (categories.length === 0) {
-    categories = [
-        { id: 1, name: 'Streaming Accounts', icon: '🎬' },
-        { id: 2, name: 'Design Tools', icon: '🎨' },
-        { id: 3, name: 'Education Premium', icon: '📚' },
-        { id: 4, name: 'Music Apps', icon: '🎵' },
-        { id: 5, name: 'Gaming', icon: '🎮' },
-        { id: 6, name: 'VPN Services', icon: '🔐' },
-        { id: 7, name: 'Cloud Storage', icon: '☁️' },
-        { id: 8, name: 'Productivity', icon: '💼' }
-    ];
-                localStorage.setItem('categories', JSON.stringify(categories));
-            }
-            
-// Initialize default subcategories if empty
-if (subcategories.length === 0) {
-    subcategories = [
-        // Streaming Accounts
-        { id: 1, categoryId: 1, name: 'Netflix' },
-        { id: 2, categoryId: 1, name: 'Disney+' },
-        { id: 3, categoryId: 1, name: 'HBO Max' },
-        { id: 4, categoryId: 1, name: 'Amazon Prime' },
-        { id: 5, categoryId: 1, name: 'Hulu' },
-        
-        // Design Tools
-        { id: 6, categoryId: 2, name: 'CapCut Pro' },
-        { id: 7, categoryId: 2, name: 'Canva Pro' },
-        { id: 8, categoryId: 2, name: 'Adobe Creative Cloud' },
-        { id: 9, categoryId: 2, name: 'Figma' },
-        
-        // Education Premium
-        { id: 10, categoryId: 3, name: 'Quizlet Plus' },
-        { id: 11, categoryId: 3, name: 'Duolingo Plus' },
-        { id: 12, categoryId: 3, name: 'Coursera Plus' },
-        { id: 13, categoryId: 3, name: 'Udemy' },
-        
-        // Music Apps
-        { id: 14, categoryId: 4, name: 'Spotify Premium' },
-        { id: 15, categoryId: 4, name: 'Apple Music' },
-        { id: 16, categoryId: 4, name: 'YouTube Music' },
-        
-        // Gaming
-        { id: 17, categoryId: 5, name: 'Steam Wallet' },
-        { id: 18, categoryId: 5, name: 'Xbox Game Pass' },
-        { id: 19, categoryId: 5, name: 'PlayStation Plus' },
-        
-        // VPN Services
-        { id: 20, categoryId: 6, name: 'NordVPN' },
-        { id: 21, categoryId: 6, name: 'ExpressVPN' },
-        
-        // Cloud Storage
-        { id: 22, categoryId: 7, name: 'Google Drive' },
-        { id: 23, categoryId: 7, name: 'Dropbox' },
-        { id: 24, categoryId: 7, name: 'iCloud' },
-        
-        // Productivity
-        { id: 25, categoryId: 8, name: 'Microsoft 365' },
-        { id: 26, categoryId: 8, name: 'Notion' },
-        { id: 27, categoryId: 8, name: 'Grammarly Premium' }
-    ];
-                localStorage.setItem('subcategories', JSON.stringify(subcategories));
-            }
-            
-            // Update user filter dropdown
-            if (currentSession.role === 'owner') {
-                const userFilter = document.getElementById('userFilter');
-                userFilter.innerHTML = '<option value="all">All Admins</option>';
-                users.forEach(user => {
-                    if (user.role === 'admin') {
-                        userFilter.innerHTML += `<option value="${user.id}">${user.customName}</option>`;
+            // Load users from Firebase
+            database.ref('users').on('value', (snapshot) => {
+                const usersData = snapshot.val() || {};
+                users = Object.values(usersData);
+                
+                // Update user filter dropdown
+                if (currentSession.role === 'owner') {
+                    const userFilter = document.getElementById('userFilter');
+                    userFilter.innerHTML = '<option value="all">All Admins</option>';
+                    users.forEach(user => {
+                        if (user.role === 'admin') {
+                            userFilter.innerHTML += `<option value="${user.id}">${user.customName}</option>`;
+                        }
+                    });
+                }
+            });
+
+            // Load sales from Firebase
+            database.ref('sales').on('value', (snapshot) => {
+                const salesData = snapshot.val() || {};
+                sales = [];
+                
+                // Convert Firebase object to array
+                Object.keys(salesData).forEach(userKey => {
+                    const userSales = salesData[userKey];
+                    if (userSales) {
+                        Object.values(userSales).forEach(sale => {
+                            sales.push(sale);
+                        });
                     }
                 });
-            }
-            
-            // Update category dropdowns
-            updateCategoryDropdowns();
-            renderCategoryList();
-            renderSubcategoryList();
+                
+                updateUI();
+            });
+
+            // Load categories from Firebase
+            database.ref('categories').once('value').then((snapshot) => {
+                const catData = snapshot.val() || {};
+                categories = Object.values(catData);
+                
+                if (categories.length === 0) {
+                    // Initialize default categories
+                    categories = [
+                        { id: 1, name: 'Streaming Accounts', icon: '🎬' },
+                        { id: 2, name: 'Design Tools', icon: '🎨' },
+                        { id: 3, name: 'Education Premium', icon: '📚' },
+                        { id: 4, name: 'Music Apps', icon: '🎵' },
+                        { id: 5, name: 'Gaming', icon: '🎮' },
+                        { id: 6, name: 'VPN Services', icon: '🔐' },
+                        { id: 7, name: 'Cloud Storage', icon: '☁️' },
+                        { id: 8, name: 'Productivity', icon: '💼' }
+                    ];
+                    
+                    // Save to Firebase
+                    categories.forEach(cat => {
+                        database.ref('categories/' + cat.id).set(cat);
+                    });
+                }
+                
+                updateCategoryDropdowns();
+                renderCategoryList();
+            });
+
+            // Load subcategories from Firebase
+            database.ref('subcategories').once('value').then((snapshot) => {
+                const subData = snapshot.val() || {};
+                subcategories = Object.values(subData);
+                
+                if (subcategories.length === 0) {
+                    // Initialize default subcategories
+                    subcategories = [
+                        // Streaming Accounts
+                        { id: 1, categoryId: 1, name: 'Netflix' },
+                        { id: 2, categoryId: 1, name: 'Disney+' },
+                        { id: 3, categoryId: 1, name: 'HBO Max' },
+                        { id: 4, categoryId: 1, name: 'Amazon Prime' },
+                        { id: 5, categoryId: 1, name: 'Hulu' },
+                        
+                        // Design Tools
+                        { id: 6, categoryId: 2, name: 'CapCut Pro' },
+                        { id: 7, categoryId: 2, name: 'Canva Pro' },
+                        { id: 8, categoryId: 2, name: 'Adobe Creative Cloud' },
+                        { id: 9, categoryId: 2, name: 'Figma' },
+                        
+                        // Education Premium
+                        { id: 10, categoryId: 3, name: 'Quizlet Plus' },
+                        { id: 11, categoryId: 3, name: 'Duolingo Plus' },
+                        { id: 12, categoryId: 3, name: 'Coursera Plus' },
+                        { id: 13, categoryId: 3, name: 'Udemy' },
+                        
+                        // Music Apps
+                        { id: 14, categoryId: 4, name: 'Spotify Premium' },
+                        { id: 15, categoryId: 4, name: 'Apple Music' },
+                        { id: 16, categoryId: 4, name: 'YouTube Music' },
+                        
+                        // Gaming
+                        {id: 17, categoryId: 5, name: 'Xbox Game Pass' },
+                        { id: 18, categoryId: 5, name: 'PlayStation Plus' },
+                        { id: 19, categoryId: 5, name: 'Nintendo Switch Online' },
+                        { id: 20, categoryId: 5, name: 'Steam' },
+                        
+                        // VPN Services
+                        { id: 21, categoryId: 6, name: 'NordVPN' },
+                        { id: 22, categoryId: 6, name: 'ExpressVPN' },
+                        { id: 23, categoryId: 6, name: 'Surfshark' },
+                        
+                        // Cloud Storage
+                        { id: 24, categoryId: 7, name: 'Google Drive' },
+                        { id: 25, categoryId: 7, name: 'Dropbox' },
+                        { id: 26, categoryId: 7, name: 'OneDrive' },
+                        
+                        // Productivity
+                        { id: 27, categoryId: 8, name: 'Microsoft 365' },
+                        { id: 28, categoryId: 8, name: 'Notion' },
+                        { id: 29, categoryId: 8, name: 'Grammarly' }
+                    ];
+                    
+                    // Save to Firebase
+                    subcategories.forEach(sub => {
+                        database.ref('subcategories/' + sub.id).set(sub);
+                    });
+                }
+                
+                renderSubcategoryList();
+            });
+
+            // Load payouts from Firebase
+            database.ref('payouts').on('value', (snapshot) => {
+                const payData = snapshot.val() || {};
+                payouts = Object.values(payData);
+                renderPayoutList();
+            });
+
+            // Load settings from Firebase
+            const username = currentSession.username;
+            database.ref('settings/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    settings = snapshot.val();
+                }
+                applySettings();
+            });
         }
 
-        // Save All Data
-        function saveData() {
-            localStorage.setItem('sales', JSON.stringify(sales));
-            localStorage.setItem('categories', JSON.stringify(categories));
-            localStorage.setItem('subcategories', JSON.stringify(subcategories));
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('payouts', JSON.stringify(payouts));
-            localStorage.setItem('settings', JSON.stringify(settings));
+        // Save Settings to Firebase
+        function saveSettings() {
+            settings.theme = document.getElementById('themeSelect').value;
+            settings.font = document.getElementById('fontSelect').value;
+            settings.headingFont = document.getElementById('headingFontSelect').value;
+            settings.language = document.getElementById('languageSelect').value;
+            settings.lowStockThreshold = parseInt(document.getElementById('lowStockThreshold').value);
+            
+            // Save to Firebase
+            const username = currentSession.username;
+            database.ref('settings/' + username).set(settings)
+                .then(() => {
+                    applySettings();
+                    updateUI();
+                    showToast('✅ Settings saved!', 'success');
+                    closeSettingsModal();
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
         }
 
         // Apply Settings
         function applySettings() {
-            // Apply theme
-            const themes = ['theme-purple', 'theme-blue', 'theme-green', 'theme-pink', 'theme-orange'];
-            themes.forEach(theme => document.body.classList.remove(theme));
+            document.body.className = '';
             document.body.classList.add(settings.theme);
-            
-            // Apply fonts
-            const fonts = ['font-poppins', 'font-roboto', 'font-opensans'];
-            fonts.forEach(font => document.body.classList.remove(font));
             document.body.classList.add(settings.font);
-            
-            const headingFonts = ['font-dancing', 'font-pacifico', 'font-greatvibes', 'font-satisfy', 'font-cookie', 'font-allura', 'font-alexbrush', 'font-kaushan', 'font-lobster'];
-            headingFonts.forEach(font => document.body.classList.remove(font));
             document.body.classList.add(settings.headingFont);
             
-            // Apply dark mode
             if (settings.darkMode) {
                 document.body.classList.add('dark-mode');
-                document.getElementById('btnDark').textContent = '☀️ Light';
             }
             
-            // Update settings modal values
-            if (document.getElementById('themeSelect')) {
-                document.getElementById('themeSelect').value = settings.theme;
-                document.getElementById('fontSelect').value = settings.font;
-                document.getElementById('headingFontSelect').value = settings.headingFont;
-                document.getElementById('languageSelect').value = settings.language;
-                document.getElementById('lowStockThreshold').value = settings.lowStockThreshold;
-            }
+            // Update settings UI
+            document.getElementById('themeSelect').value = settings.theme;
+            document.getElementById('fontSelect').value = settings.font;
+            document.getElementById('headingFontSelect').value = settings.headingFont;
+            document.getElementById('languageSelect').value = settings.language;
+            document.getElementById('lowStockThreshold').value = settings.lowStockThreshold;
         }
 
-        // ==================== EVENT LISTENERS ====================
-        function setupEventListeners() {
-            // Logout
-            document.getElementById('btnLogout').addEventListener('click', () => {
-                if (confirm('Are you sure you want to logout?')) {
-                    localStorage.removeItem('session');
-                    window.location.href = 'index.html';
-                }
-            });
-
-            // Dark Mode
-            document.getElementById('btnDark').addEventListener('click', toggleDarkMode);
-
-            // Theme Cycling
-            document.getElementById('btnTheme').addEventListener('click', cycleTheme);
-
-            // Settings Modal
-            document.getElementById('btnSettings').addEventListener('click', openSettingsModal);
-
-            // User Management
-            document.getElementById('btnUsers').addEventListener('click', openUserModal);
-
-            // Forms
-            document.getElementById('addProductForm').addEventListener('submit', addProduct);
-            document.getElementById('addCategoryForm').addEventListener('submit', addCategory);
-            document.getElementById('addSubcategoryForm').addEventListener('submit', addSubcategory);
-            document.getElementById('addUserForm').addEventListener('submit', addUser);
-
-            // Form Tabs
-            document.querySelectorAll('.form-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.form-content').forEach(c => c.classList.remove('active'));
-                    tab.classList.add('active');
-                    const tabName = tab.dataset.tab;
-                    document.getElementById(tabName + 'Form').classList.add('active');
-                    
-                    // Update dropdowns when switching tabs
-                    if (tabName === 'subcategory') {
-                        updateSubcategoryParentDropdown();
-                    }
-                });
-            });
-
-            // Period Tabs
-            document.querySelectorAll('.period-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    updateStats();
-                    updateCharts();
-                });
-            });
-
-            // Filters
-            document.getElementById('filterAll').addEventListener('click', () => applyFilter('all'));
-            document.getElementById('filterSold').addEventListener('click', () => applyFilter('sold'));
-            document.getElementById('filterStock').addEventListener('click', () => applyFilter('stock'));
-            
-            // Search
-            document.getElementById('searchInput').addEventListener('input', renderSalesTable);
-            document.getElementById('userFilter').addEventListener('change', renderSalesTable);
-
-            // Clear All Data
-            document.getElementById('btnClearAll').addEventListener('click', clearAllData);
-
-            // Export CSV
-            document.getElementById('btnExport').addEventListener('click', exportToCSV);
-
-            // Category change - update subcategory dropdown
-            document.getElementById('productCategory').addEventListener('change', updateSubcategoryDropdown);
-        }
-
-        // ==================== PRODUCT MANAGEMENT ====================
-        function addProduct(e) {
+        // =================== SALES FUNCTIONS ===================
+        
+        // Add Product
+        document.getElementById('addProductForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const categoryId = parseInt(document.getElementById('productCategory').value);
-            const subcategoryId = parseInt(document.getElementById('productSubcategory').value);
-            const category = categories.find(c => c.id === categoryId);
-            const subcategory = subcategories.find(s => s.id === subcategoryId);
-
-            const newProduct = {
+            const newSale = {
                 id: Date.now(),
                 userId: currentSession.id,
                 userName: currentSession.customName,
-                productName: document.getElementById('productName').value.trim(),
-                category: category.name,
-                categoryId: categoryId,
-                subcategory: subcategory.name,
-                subcategoryId: subcategoryId,
+                date: new Date().toISOString().split('T')[0],
+                product: document.getElementById('productName').value.trim(),
+                categoryId: parseInt(document.getElementById('productCategory').value),
+                subcategoryId: parseInt(document.getElementById('productSubcategory').value),
                 quantity: parseInt(document.getElementById('productQuantity').value),
                 price: parseFloat(document.getElementById('productPrice').value),
-                soldStatus: document.getElementById('productSoldStatus').value,
-                date: new Date().toISOString().split('T')[0],
-                timestamp: Date.now()
+                sold: document.getElementById('productSoldStatus').value === 'yes'
             };
+            
+            // Add category and subcategory names for display
+            const category = categories.find(c => c.id === newSale.categoryId);
+            const subcategory = subcategories.find(s => s.id === newSale.subcategoryId);
+            newSale.categoryName = category ? category.name : '';
+            newSale.subcategoryName = subcategory ? subcategory.name : '';
+            
+            // Save to Firebase
+            const userKey = currentSession.username.replace(/[.#$/[\]]/g, '_');
+            database.ref('sales/' + userKey + '/' + newSale.id).set(newSale)
+                .then(() => {
+                    document.getElementById('addProductForm').reset();
+                    showToast('✅ Product added successfully!', 'success');
+                    updateUI();
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
+        });
 
-            sales.unshift(newProduct);
-            saveData();
-            updateUI();
-            document.getElementById('addProductForm').reset();
-            showToast('✅ Product added successfully!', 'success');
+        // Edit Sale
+        function editSale(id) {
+            const sale = sales.find(s => s.id === id);
+            if (!sale) return;
+            
+            document.getElementById('productName').value = sale.product;
+            document.getElementById('productCategory').value = sale.categoryId;
+            updateSubcategoryOptions();
+            document.getElementById('productSubcategory').value = sale.subcategoryId;
+            document.getElementById('productQuantity').value = sale.quantity;
+            document.getElementById('productPrice').value = sale.price;
+            document.getElementById('productSoldStatus').value = sale.sold ? 'yes' : 'no';
+            
+            // Delete old entry and prepare for update
+            deleteSale(id);
+            
+            // Scroll to form
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+            showToast('📝 Edit mode - Update the product and save', 'info');
         }
 
-        // ==================== CATEGORY MANAGEMENT ====================
-        function addCategory(e) {
+        // Delete Sale
+        function deleteSale(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                const sale = sales.find(s => s.id === id);
+                if (!sale) return;
+                
+                const userKey = sale.userName.replace(/[.#$/[\]]/g, '_');
+                database.ref('sales/' + userKey + '/' + id).remove()
+                    .then(() => {
+                        showToast('🗑️ Product deleted', 'info');
+                        updateUI();
+                    })
+                    .catch((error) => {
+                        showToast('❌ Error: ' + error.message, 'error');
+                    });
+            }
+        }
+
+        // Toggle Sold Status
+        function toggleSold(id) {
+            const sale = sales.find(s => s.id === id);
+            if (!sale) return;
+            
+            sale.sold = !sale.sold;
+            
+            const userKey = sale.userName.replace(/[.#$/[\]]/g, '_');
+            database.ref('sales/' + userKey + '/' + id).update({ sold: sale.sold })
+                .then(() => {
+                    showToast(sale.sold ? '✅ Marked as sold!' : '📦 Marked as in stock', 'success');
+                    updateUI();
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
+        }
+
+        // =================== CATEGORY FUNCTIONS ===================
+        
+        // Add Category
+        document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const categoryName = document.getElementById('categoryName').value.trim();
@@ -1792,60 +1859,79 @@ if (subcategories.length === 0) {
                 icon: categoryIcon
             };
 
-            categories.push(newCategory);
-            saveData();
-            updateCategoryDropdowns();
-            renderCategoryList();
-            document.getElementById('addCategoryForm').reset();
-            showToast('✅ Category added successfully!', 'success');
-        }
+            // Save to Firebase
+            database.ref('categories/' + newCategory.id).set(newCategory)
+                .then(() => {
+                    categories.push(newCategory);
+                    updateCategoryDropdowns();
+                    renderCategoryList();
+                    document.getElementById('addCategoryForm').reset();
+                    showToast('✅ Category added successfully!', 'success');
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
+        });
 
-        function deleteCategory(categoryId) {
-            if (confirm('Delete this category? All associated subcategories will also be deleted.')) {
-                categories = categories.filter(c => c.id !== categoryId);
-                subcategories = subcategories.filter(s => s.categoryId !== categoryId);
-                saveData();
-                updateCategoryDropdowns();
-                renderCategoryList();
-                renderSubcategoryList();
-                showToast('🗑️ Category deleted', 'info');
+        // Delete Category
+        function deleteCategory(id) {
+            if (confirm('Delete this category? Subcategories and products will remain.')) {
+                database.ref('categories/' + id).remove()
+                    .then(() => {
+                        categories = categories.filter(c => c.id !== id);
+                        updateCategoryDropdowns();
+                        renderCategoryList();
+                        showToast('🗑️ Category deleted', 'info');
+                    })
+                    .catch((error) => {
+                        showToast('❌ Error: ' + error.message, 'error');
+                    });
             }
         }
 
+        // Update Category Dropdowns
         function updateCategoryDropdowns() {
-            const productCategorySelect = document.getElementById('productCategory');
-            const subcategoryParentSelect = document.getElementById('subcategoryParent');
+            const categorySelects = ['productCategory', 'subcategoryParent'];
             
-            const categoryOptions = categories.map(cat => 
-                `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`
-            ).join('');
-            
-            productCategorySelect.innerHTML = '<option value="">Select category</option>' + categoryOptions;
-            subcategoryParentSelect.innerHTML = '<option value="">Select category</option>' + categoryOptions;
+            categorySelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Select category</option>';
+                
+                categories.forEach(cat => {
+                    select.innerHTML += `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`;
+                });
+                
+                select.value = currentValue;
+            });
         }
 
+        // Render Category List
         function renderCategoryList() {
             const categoryList = document.getElementById('categoryList');
             
             if (categories.length === 0) {
-                categoryList.innerHTML = '<p style="text-align: center; color: #999;">No categories yet.</p>';
+                categoryList.innerHTML = '<div class="empty-state"><div class="empty-icon">📁</div><p>No categories yet</p></div>';
                 return;
             }
-
-            categoryList.innerHTML = categories.map(cat => `
-                <div class="user-item" style="margin-bottom: 10px;">
+            
+            categoryList.innerHTML = '<div class="user-list">' + categories.map(cat => `
+                <div class="user-item">
                     <div class="user-item-info">
                         <div class="user-item-name">${cat.icon} ${cat.name}</div>
+                        <div class="user-item-details">ID: ${cat.id}</div>
                     </div>
                     <div class="user-item-actions">
-                        <button class="action-btn delete-btn" onclick="deleteCategory(${cat.id})">🗑️</button>
+                        <button class="action-btn delete-btn" onclick="deleteCategory(${cat.id})">🗑️ Delete</button>
                     </div>
                 </div>
-            `).join('');
+            `).join('') + '</div>';
         }
 
-        // ==================== SUBCATEGORY MANAGEMENT ====================
-        function addSubcategory(e) {
+        // =================== SUBCATEGORY FUNCTIONS ===================
+        
+        // Add Subcategory
+        document.getElementById('addSubcategoryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const categoryId = parseInt(document.getElementById('subcategoryParent').value);
@@ -1868,160 +1954,211 @@ if (subcategories.length === 0) {
                 name: subcategoryName
             };
 
-            subcategories.push(newSubcategory);
-            saveData();
-            renderSubcategoryList();
-            document.getElementById('addSubcategoryForm').reset();
-            showToast('✅ Subcategory added successfully!', 'success');
-        }
+            // Save to Firebase
+            database.ref('subcategories/' + newSubcategory.id).set(newSubcategory)
+                .then(() => {
+                    subcategories.push(newSubcategory);
+                    renderSubcategoryList();
+                    document.getElementById('addSubcategoryForm').reset();
+                    showToast('✅ Subcategory added successfully!', 'success');
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
+        });
 
-        function deleteSubcategory(subcategoryId) {
-            if (confirm('Delete this subcategory?')) {
-                subcategories = subcategories.filter(s => s.id !== subcategoryId);
-                saveData();
-                renderSubcategoryList();
-                showToast('🗑️ Subcategory deleted', 'info');
+        // Delete Subcategory
+        function deleteSubcategory(id) {
+            if (confirm('Delete this subcategory? Products will remain.')) {
+                database.ref('subcategories/' + id).remove()
+                    .then(() => {
+                        subcategories = subcategories.filter(s => s.id !== id);
+                        renderSubcategoryList();
+                        showToast('🗑️ Subcategory deleted', 'info');
+                    })
+                    .catch((error) => {
+                        showToast('❌ Error: ' + error.message, 'error');
+                    });
             }
         }
 
-        function updateSubcategoryParentDropdown() {
-            const subcategoryParentSelect = document.getElementById('subcategoryParent');
-            const categoryOptions = categories.map(cat => 
-                `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`
-            ).join('');
-            subcategoryParentSelect.innerHTML = '<option value="">Select category</option>' + categoryOptions;
-        }
-
-        function updateSubcategoryDropdown() {
+        // Update Subcategory Options
+        function updateSubcategoryOptions() {
             const categoryId = parseInt(document.getElementById('productCategory').value);
             const subcategorySelect = document.getElementById('productSubcategory');
             
-            if (!categoryId) {
-                subcategorySelect.innerHTML = '<option value="">Select category first</option>';
-                return;
-            }
+            subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
             
-            const filteredSubcategories = subcategories.filter(s => s.categoryId === categoryId);
+            if (!categoryId) return;
             
-            if (filteredSubcategories.length === 0) {
-                subcategorySelect.innerHTML = '<option value="">No subcategories available</option>';
-                return;
-            }
-            
-            const subcategoryOptions = filteredSubcategories.map(sub => 
-                `<option value="${sub.id}">${sub.name}</option>`
-            ).join('');
-            
-            subcategorySelect.innerHTML = '<option value="">Select subcategory</option>' + subcategoryOptions;
+            const filtered = subcategories.filter(s => s.categoryId === categoryId);
+            filtered.forEach(sub => {
+                subcategorySelect.innerHTML += `<option value="${sub.id}">${sub.name}</option>`;
+            });
         }
 
+        // Render Subcategory List
         function renderSubcategoryList() {
             const subcategoryList = document.getElementById('subcategoryList');
             
             if (subcategories.length === 0) {
-                subcategoryList.innerHTML = '<p style="text-align: center; color: #999;">No subcategories yet.</p>';
+                subcategoryList.innerHTML = '<div class="empty-state"><div class="empty-icon">🏷️</div><p>No subcategories yet</p></div>';
                 return;
             }
-
-            const groupedSubcategories = {};
-            subcategories.forEach(sub => {
+            
+            subcategoryList.innerHTML = '<div class="user-list">' + subcategories.map(sub => {
                 const category = categories.find(c => c.id === sub.categoryId);
-                if (category) {
-                    if (!groupedSubcategories[category.name]) {
-                        groupedSubcategories[category.name] = [];
-                    }
-                    groupedSubcategories[category.name].push(sub);
-                }
-            });
-
-            subcategoryList.innerHTML = Object.keys(groupedSubcategories).map(categoryName => {
-                const category = categories.find(c => c.name === categoryName);
                 return `
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: var(--primary); margin-bottom: 10px;">${category.icon} ${categoryName}</h4>
-                        ${groupedSubcategories[categoryName].map(sub => `
-                            <div class="user-item" style="margin-bottom: 10px;">
-                                <div class="user-item-info">
-                                    <div class="user-item-name">🏷️ ${sub.name}</div>
-                                </div>
-                                <div class="user-item-actions">
-                                    <button class="action-btn delete-btn" onclick="deleteSubcategory(${sub.id})">🗑️</button>
-                                </div>
-                            </div>
-                        `).join('')}
+                    <div class="user-item">
+                        <div class="user-item-info">
+                            <div class="user-item-name">${sub.name}</div>
+                            <div class="user-item-details">${category ? category.icon + ' ' + category.name : 'Unknown Category'}</div>
+                        </div>
+                        <div class="user-item-actions">
+                            <button class="action-btn delete-btn" onclick="deleteSubcategory(${sub.id})">🗑️ Delete</button>
+                        </div>
                     </div>
                 `;
-            }).join('');
+            }).join('') + '</div>';
         }
-        // ==================== USER MANAGEMENT ====================
-        function addUser(e) {
+
+        // =================== USER MANAGEMENT ===================
+        
+        // Add User (Admin)
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const username = document.getElementById('newUsername').value.trim();
             
-            // Check if username exists
-            if (users.find(u => u.username === username)) {
-                showToast('❌ Username already exists!', 'error');
-                return;
-            }
+            // Check if username exists in Firebase
+            database.ref('users/' + username).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        showToast('❌ Username already exists!', 'error');
+                        return Promise.reject('Username exists');
+                    }
 
-            const newUser = {
-                id: Date.now(),
-                customName: document.getElementById('newUserName').value.trim(),
-                username: username,
-                password: document.getElementById('newPassword').value,
-                role: 'admin',
-                profitPercent: parseFloat(document.getElementById('newProfitPercent').value),
-                createdDate: new Date().toISOString().split('T')[0]
-            };
+                    const newUser = {
+                        id: Date.now(),
+                        customName: document.getElementById('newUserName').value.trim(),
+                        username: username,
+                        password: document.getElementById('newPassword').value,
+                        role: 'admin',
+                        profitPercent: parseFloat(document.getElementById('newProfitPercent').value),
+                        createdDate: new Date().toISOString().split('T')[0]
+                    };
 
-            users.push(newUser);
-            saveData();
-            loadAllData();
-            document.getElementById('addUserForm').reset();
-            renderUserList();
-            showToast('✅ Admin added successfully!', 'success');
-        }
+                    // Save to Firebase
+                    return database.ref('users/' + username).set(newUser);
+                })
+                .then(() => {
+                    document.getElementById('addUserForm').reset();
+                    renderUserList();
+                    showToast('✅ Admin added successfully!', 'success');
+                })
+                .catch((error) => {
+                    if (error !== 'Username exists') {
+                        showToast('❌ Error: ' + error.message, 'error');
+                    }
+                });
+        });
 
+        // Delete User
         function deleteUser(userId) {
             if (confirm('Are you sure you want to delete this admin? Their sales will remain.')) {
-                users = users.filter(u => u.id !== userId);
-                payouts = payouts.filter(p => p.userId !== userId);
-                saveData();
-                loadAllData();
-                renderUserList();
-                renderPayoutList();
-                showToast('🗑️ Admin deleted', 'info');
+                const user = users.find(u => u.id === userId);
+                if (!user) return;
+                
+                // Delete from Firebase
+                database.ref('users/' + user.username).remove()
+                    .then(() => {
+                        // Also remove their payouts
+                        return database.ref('payouts').orderByChild('userId').equalTo(userId).once('value');
+                    })
+                    .then((snapshot) => {
+                        const deletePromises = [];
+                        snapshot.forEach((child) => {
+                            deletePromises.push(database.ref('payouts/' + child.key).remove());
+                        });
+                        return Promise.all(deletePromises);
+                    })
+                    .then(() => {
+                        renderUserList();
+                        renderPayoutList();
+                        showToast('🗑️ Admin deleted', 'info');
+                    })
+                    .catch((error) => {
+                        showToast('❌ Error: ' + error.message, 'error');
+                    });
             }
         }
 
+        // Calculate User Payout
+        function calculatePayout(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+            
+            const userSales = sales.filter(s => s.userId === userId && s.sold);
+            const totalSales = userSales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
+            const payoutAmount = (totalSales * user.profitPercent) / 100;
+            
+            const payout = {
+                id: Date.now(),
+                userId: userId,
+                userName: user.customName,
+                amount: payoutAmount,
+                date: new Date().toISOString().split('T')[0],
+                status: 'pending'
+            };
+            
+            // Save to Firebase
+            database.ref('payouts/' + payout.id).set(payout)
+                .then(() => {
+                    showToast('✅ Payout calculated: ₱' + payoutAmount.toFixed(2), 'success');
+                    renderPayoutList();
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
+        }
+
+        // Mark Payout as Paid
+        function markPaid(payoutId) {
+            database.ref('payouts/' + payoutId).update({ status: 'paid' })
+                .then(() => {
+                    showToast('✅ Marked as paid!', 'success');
+                    renderPayoutList();
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
+        }
+
+        // Render User List
         function renderUserList() {
             const userList = document.getElementById('userList');
             const adminUsers = users.filter(u => u.role === 'admin');
-
+            
             if (adminUsers.length === 0) {
-                userList.innerHTML = '<p style="text-align: center; color: #999;">No admins yet. Add one above!</p>';
+                userList.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><p>No admins yet</p></div>';
                 return;
             }
-
+            
             userList.innerHTML = adminUsers.map(user => {
-                const userSales = sales.filter(s => s.userId === user.id);
+                const userSales = sales.filter(s => s.userId === user.id && s.sold);
                 const totalSales = userSales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
-                const earnings = totalSales * (user.profitPercent / 100);
-
+                const earnings = (totalSales * user.profitPercent) / 100;
+                
                 return `
                     <div class="user-item">
                         <div class="user-item-info">
-                            <div class="user-item-name">👤 ${user.customName}</div>
+                            <div class="user-item-name">${user.customName}</div>
                             <div class="user-item-details">
-                                Username: <strong>${user.username}</strong> | 
-                                Profit: <strong>${user.profitPercent}%</strong> | 
-                                Total Sales: <strong>₱${totalSales.toFixed(2)}</strong> | 
-                                Earnings: <strong>₱${earnings.toFixed(2)}</strong> |
-                                Created: <strong>${user.createdDate}</strong>
+                                @${user.username} • Profit: ${user.profitPercent}% • Earnings: ₱${earnings.toFixed(2)}
                             </div>
                         </div>
                         <div class="user-item-actions">
+                            <button class="action-btn edit-btn" onclick="calculatePayout(${user.id})">💰 Calculate Payout</button>
                             <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">🗑️ Delete</button>
                         </div>
                     </div>
@@ -2029,806 +2166,488 @@ if (subcategories.length === 0) {
             }).join('');
         }
 
-        // ==================== PAYOUT MANAGEMENT ====================
-        function markAsPaid(userId, amount) {
-            const existingPayout = payouts.find(p => p.userId === userId);
-            
-            if (existingPayout) {
-                existingPayout.status = existingPayout.status === 'paid' ? 'pending' : 'paid';
-                existingPayout.paidDate = existingPayout.status === 'paid' ? new Date().toISOString().split('T')[0] : null;
-                existingPayout.amount = amount;
-            } else {
-                payouts.push({
-                    id: Date.now(),
-                    userId: userId,
-                    amount: amount,
-                    status: 'paid',
-                    paidDate: new Date().toISOString().split('T')[0]
-                });
-            }
-
-            saveData();
-            renderPayoutList();
-            showToast('💰 Payout status updated!', 'success');
-        }
-
+        // Render Payout List
         function renderPayoutList() {
             const payoutList = document.getElementById('payoutList');
-            const adminUsers = users.filter(u => u.role === 'admin');
-
-            if (adminUsers.length === 0) {
-                payoutList.innerHTML = '<p style="text-align: center; color: #999;">No payouts yet.</p>';
+            
+            if (payouts.length === 0) {
+                payoutList.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><p>No payouts yet</p></div>';
                 return;
             }
-
-            payoutList.innerHTML = adminUsers.map(user => {
-                const userSales = sales.filter(s => s.userId === user.id);
-                const totalSales = userSales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
-                const earnings = totalSales * (user.profitPercent / 100);
-                
-                const payout = payouts.find(p => p.userId === user.id) || { status: 'pending', paidAmount: 0 };
-
-                return `
-                    <div class="payout-item">
-                        <div class="payout-info">
-                            <h4>💰 ${user.customName}</h4>
-                            <div class="payout-amount">₱${earnings.toFixed(2)}</div>
-                            <span class="payout-status ${payout.status}">${payout.status === 'paid' ? '✅ PAID' : '⏳ PENDING'}</span>
-                            ${payout.paidDate ? `<div style="font-size: 0.85em; color: #999; margin-top: 5px;">Paid on: ${payout.paidDate}</div>` : ''}
-                        </div>
-                        <div>
-                            <button class="btn btn-success" onclick="markAsPaid(${user.id}, ${earnings})" style="padding: 12px 20px; width: auto;">
-                                ${payout.status === 'paid' ? '↩️ Mark Unpaid' : '✅ Mark as Paid'}
-                            </button>
-                        </div>
+            
+            payoutList.innerHTML = payouts.map(payout => `
+                <div class="payout-item">
+                    <div class="payout-info">
+                        <h4>${payout.userName}</h4>
+                        <div class="payout-amount">₱${payout.amount.toFixed(2)}</div>
+                        <div>Date: ${payout.date}</div>
+                        <span class="payout-status ${payout.status}">${payout.status}</span>
                     </div>
-                `;
-            }).join('');
+                    <div>
+                        ${payout.status === 'pending' ? 
+                            `<button class="btn btn-success" onclick="markPaid(${payout.id})">✅ Mark Paid</button>` :
+                            `<button class="btn btn-secondary" disabled>✓ Paid</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // ==================== STATISTICS & UPDATES ====================
+        // =================== UI UPDATE FUNCTIONS ===================
+        
+        // Update UI
         function updateUI() {
             updateStats();
-            updateCharts();
             renderSalesTable();
+            updateCharts();
             checkLowStock();
         }
 
-        function updateStats() {
-            const period = document.querySelector('.period-tab.active').dataset.period;
-            let filteredSales = sales;
-
-            // Filter by user if not owner
-            if (currentSession.role !== 'owner') {
-                filteredSales = sales.filter(s => s.userId === currentSession.id);
-            }
-
-            // Filter by period
+        // Get Filtered Sales Based on Current Period
+        function getFilteredSales() {
+            const activePeriod = document.querySelector('.period-tab.active').dataset.period;
             const today = new Date();
-            if (period === 'today') {
-                const todayStr = today.toISOString().split('T')[0];
-                filteredSales = filteredSales.filter(s => s.date === todayStr);
-            } else if (period === 'week') {
-                const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-                filteredSales = filteredSales.filter(s => new Date(s.date) >= weekAgo);
-            } else if (period === 'month') {
-                const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-                filteredSales = filteredSales.filter(s => new Date(s.date) >= monthAgo);
+            today.setHours(0, 0, 0, 0);
+            
+            let filtered = sales;
+            
+            // Filter by user if not owner
+            if (currentSession.role === 'admin') {
+                filtered = filtered.filter(s => s.userId === currentSession.id);
+            } else {
+                // Owner: filter by selected user
+                const selectedUserId = document.getElementById('userFilter').value;
+                if (selectedUserId !== 'all') {
+                    filtered = filtered.filter(s => s.userId === parseInt(selectedUserId));
+                }
             }
+            
+            // Filter by period
+            if (activePeriod === 'today') {
+                filtered = filtered.filter(s => {
+                    const saleDate = new Date(s.date);
+                    saleDate.setHours(0, 0, 0, 0);
+                    return saleDate.getTime() === today.getTime();
+                });
+            } else if (activePeriod === 'week') {
+                const weekAgo = new Date(today);
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                filtered = filtered.filter(s => new Date(s.date) >= weekAgo);
+            } else if (activePeriod === 'month') {
+                const monthAgo = new Date(today);
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                filtered = filtered.filter(s => new Date(s.date) >= monthAgo);
+            }
+            
+            return filtered;
+        }
 
-            // Calculate stats
-            const totalSales = filteredSales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
-            const totalProducts = filteredSales.length;
-            const itemsSold = filteredSales.filter(s => s.soldStatus === 'yes').length;
-            const avgSale = totalProducts > 0 ? totalSales / totalProducts : 0;
+        // Update Stats
+        function updateStats() {
+            const filtered = getFilteredSales();
+            const soldItems = filtered.filter(s => s.sold);
+            
+            // Calculate totals
+            const totalSales = soldItems.reduce((sum, s) => sum + (s.price * s.quantity), 0);
+            const totalProducts = filtered.reduce((sum, s) => sum + s.quantity, 0);
+            const itemsSold = soldItems.reduce((sum, s) => sum + s.quantity, 0);
+            const avgSale = soldItems.length > 0 ? totalSales / soldItems.length : 0;
             
             // Calculate user earnings
-            const userSales = filteredSales.filter(s => s.userId === currentSession.id);
-            const userTotal = userSales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
-            const myEarnings = userTotal * (currentSession.profitPercent / 100);
-
-            // Update DOM
-            document.getElementById('totalSales').textContent = '₱' + totalSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            let myEarnings = 0;
+            if (currentSession.role === 'admin') {
+                const mySales = soldItems.filter(s => s.userId === currentSession.id);
+                const mySalesTotal = mySales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
+                myEarnings = (mySalesTotal * currentSession.profitPercent) / 100;
+            } else {
+                myEarnings = totalSales; // Owner gets all
+            }
+            
+            // Update UI
+            document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
             document.getElementById('totalProducts').textContent = totalProducts;
             document.getElementById('itemsSold').textContent = itemsSold;
-            document.getElementById('avgSale').textContent = '₱' + avgSale.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('myEarnings').textContent = '₱' + myEarnings.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('avgSale').textContent = '₱' + avgSale.toFixed(2);
+            document.getElementById('myEarnings').textContent = '₱' + myEarnings.toFixed(2);
             document.getElementById('profitRate').textContent = currentSession.profitPercent + '%';
-
-            // Calculate changes (mock data for now)
-            document.getElementById('salesChange').textContent = '+12.5%';
-            document.getElementById('productsChange').textContent = '+' + Math.floor(Math.random() * 10);
-            document.getElementById('soldChange').textContent = '+' + Math.floor(Math.random() * 5);
         }
 
-        function updateCharts() {
-            updateSalesChart();
-            updateCategoryChart();
-        }
-
-        function updateSalesChart() {
-            const ctx = document.getElementById('salesChart');
-            if (window.salesChartInstance) window.salesChartInstance.destroy();
-            
-            // Get last 7 days
-            const last7Days = [];
-            const salesByDay = {};
-            
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                last7Days.push(dateStr);
-                salesByDay[dateStr] = 0;
-            }
-            
-            // Calculate sales for each day
-            let filteredSales = sales;
-            if (currentSession.role !== 'owner') {
-                filteredSales = sales.filter(s => s.userId === currentSession.id);
-            }
-            
-            filteredSales.forEach(sale => {
-                if (salesByDay.hasOwnProperty(sale.date)) {
-                    salesByDay[sale.date] += sale.price * sale.quantity;
-                }
-            });
-            
-            const salesData = last7Days.map(date => salesByDay[date]);
-            const labels = last7Days.map(date => {
-                const d = new Date(date);
-                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            });
-            
-            window.salesChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Sales (₱)',
-                        data: salesData,
-                        borderColor: '#8B5CF6',
-                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateCategoryChart() {
-            const ctx = document.getElementById('categoryChart');
-            if (window.categoryChartInstance) window.categoryChartInstance.destroy();
-            
-            let filteredSales = sales;
-            if (currentSession.role !== 'owner') {
-                filteredSales = sales.filter(s => s.userId === currentSession.id);
-            }
-            
-            const categoryData = {};
-            filteredSales.forEach(sale => {
-                categoryData[sale.category] = (categoryData[sale.category] || 0) + (sale.price * sale.quantity);
-            });
-            
-            const labels = Object.keys(categoryData);
-            const data = Object.values(categoryData);
-            const colors = ['#8B5CF6', '#EC4899', '#06B6D4', '#10B981', '#F59E0B', '#EF4444'];
-            
-            window.categoryChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors.slice(0, labels.length)
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
-        function checkLowStock() {
-            const threshold = settings.lowStockThreshold;
-            const lowStockItems = sales.filter(s => s.soldStatus === 'no' && s.quantity <= threshold);
-            
-            const alertDiv = document.getElementById('lowStockAlert');
-            const itemsDiv = document.getElementById('lowStockItems');
-            
-            if (lowStockItems.length > 0) {
-                alertDiv.classList.add('show');
-                itemsDiv.innerHTML = lowStockItems.map(item => 
-                    `<div class="alert-item">${item.productName} (${item.quantity} left)</div>`
-                ).join('');
-            } else {
-                alertDiv.classList.remove('show');
-            }
-        }
-
-        // ==================== TABLE MANAGEMENT ====================
+        // Render Sales Table
         function renderSalesTable() {
             const tbody = document.getElementById('salesTableBody');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const userFilterValue = document.getElementById('userFilter').value;
+            const filtered = getFilteredSales();
             
-            let filteredSales = sales;
-
-            // Filter by user role
-            if (currentSession.role !== 'owner') {
-                filteredSales = filteredSales.filter(s => s.userId === currentSession.id);
-            } else if (userFilterValue !== 'all') {
-                filteredSales = filteredSales.filter(s => s.userId == userFilterValue);
-            }
-
-            // Search filter
+            // Apply search filter
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let displaySales = filtered;
+            
             if (searchTerm) {
-                filteredSales = filteredSales.filter(s => 
-                    s.productName.toLowerCase().includes(searchTerm) ||
-                    s.category.toLowerCase().includes(searchTerm) ||
-                    s.subcategory.toLowerCase().includes(searchTerm) ||
-                    s.userName.toLowerCase().includes(searchTerm)
+                displaySales = filtered.filter(s => 
+                    s.product.toLowerCase().includes(searchTerm) ||
+                    s.categoryName.toLowerCase().includes(searchTerm) ||
+                    s.subcategoryName.toLowerCase().includes(searchTerm)
                 );
             }
-
-            if (filteredSales.length === 0) {
+            
+            // Apply sold/stock filter
+            const activeFilter = document.querySelector('.filter-btn.active').id;
+            if (activeFilter === 'filterSold') {
+                displaySales = displaySales.filter(s => s.sold);
+            } else if (activeFilter === 'filterStock') {
+                displaySales = displaySales.filter(s => !s.sold);
+            }
+            
+            if (displaySales.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="10">
                             <div class="empty-state">
                                 <div class="empty-icon">📦</div>
                                 <h3>No products found</h3>
-                                <p>Try adjusting your filters or add a new product</p>
+                                <p>Try adjusting your filters or add new products</p>
                             </div>
                         </td>
                     </tr>
                 `;
                 return;
             }
-
-            tbody.innerHTML = filteredSales.map(sale => {
-                const total = sale.price * sale.quantity;
-                const adminColumn = currentSession.role === 'owner' ? `<td><strong>${sale.userName}</strong></td>` : '';
-                
-                return `
-                    <tr>
-                        <td>${sale.date}</td>
-                        ${adminColumn}
-                        <td>${sale.productName}</td>
-                        <td>${sale.category}</td>
-                        <td>${sale.subcategory}</td>
-                        <td>${sale.quantity}</td>
-                        <td>₱${sale.price.toFixed(2)}</td>
-                        <td class="amount-cell">₱${total.toFixed(2)}</td>
-                        <td>${sale.soldStatus === 'yes' ? '<span class="sold-check">✅</span>' : '❌'}</td>
-                        <td>
-                            <button class="action-btn edit-btn" onclick="editSale(${sale.id})">✏️</button>
-                            <button class="action-btn delete-btn" onclick="deleteSale(${sale.id})">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            
+            tbody.innerHTML = displaySales.map(sale => `
+                <tr>
+                    <td>${sale.date}</td>
+                    ${currentSession.role === 'owner' ? `<td><strong>${sale.userName}</strong></td>` : ''}
+                    <td><strong>${sale.product}</strong></td>
+                    <td>${sale.categoryName}</td>
+                    <td>${sale.subcategoryName}</td>
+                    <td>${sale.quantity}</td>
+                    <td>₱${sale.price.toFixed(2)}</td>
+                    <td class="amount-cell">₱${(sale.price * sale.quantity).toFixed(2)}</td>
+                    <td>
+                        <span class="sold-check" style="cursor: pointer;" onclick="toggleSold(${sale.id})">
+                            ${sale.sold ? '✅' : '❌'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editSale(${sale.id})">✏️ Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteSale(${sale.id})">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
-        function applyFilter(type) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.id.startsWith('filter')) btn.classList.remove('active');
+        // Update Charts
+        function updateCharts() {
+            const filtered = getFilteredSales();
+            const soldItems = filtered.filter(s => s.sold);
+            
+            // Sales Chart Data
+            const dates = [...new Set(soldItems.map(s => s.date))].sort();
+            const salesByDate = dates.map(date => {
+                const daySales = soldItems.filter(s => s.date === date);
+                return daySales.reduce((sum, s) => sum + (s.price * s.quantity), 0);
             });
-            event.target.classList.add('active');
             
-            const tbody = document.getElementById('salesTableBody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
+            // Category Chart Data
+            const categoryStats = categories.map(cat => {
+                const catSales = soldItems.filter(s => s.categoryId === cat.id);
+                return {
+                    name: cat.name,
+                    value: catSales.reduce((sum, s) => sum + (s.price * s.quantity), 0)
+                };
+            }).filter(c => c.value > 0);
             
-            rows.forEach(row => {
-                if (type === 'all') {
-                    row.style.display = '';
-                } else if (type === 'sold') {
-                    const soldCell = row.querySelector('td:nth-last-child(2)');
-                    row.style.display = soldCell && soldCell.textContent.includes('✅') ? '' : 'none';
-                } else if (type === 'stock') {
-                    const soldCell = row.querySelector('td:nth-last-child(2)');
-                    row.style.display = soldCell && soldCell.textContent.includes('❌') ? '' : 'none';
+            // Render Sales Chart
+            const salesCtx = document.getElementById('salesChart');
+            if (window.salesChart) window.salesChart.destroy();
+            window.salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Sales (₱)',
+                        data: salesByDate,
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+            
+            // Render Category Chart
+            const categoryCtx = document.getElementById('categoryChart');
+            if (window.categoryChart) window.categoryChart.destroy();
+            window.categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryStats.map(c => c.name),
+                    datasets: [{
+                        data: categoryStats.map(c => c.value),
+                        backgroundColor: [
+                            '#8B5CF6', '#EC4899', '#06B6D4', '#10B981',
+                            '#F59E0B', '#EF4444', '#3B82F6', '#A78BFA'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
                 }
             });
         }
 
-        function editSale(saleId) {
-            const sale = sales.find(s => s.id === saleId);
-            if (!sale) return;
+        // Check Low Stock
+        function checkLowStock() {
+            const filtered = getFilteredSales();
+            const inStock = filtered.filter(s => !s.sold);
+            const lowStock = inStock.filter(s => s.quantity <= settings.lowStockThreshold);
             
-            // Check if user has permission
-            if (currentSession.role !== 'owner' && sale.userId !== currentSession.id) {
-                showToast('❌ You can only edit your own sales!', 'error');
-                return;
-            }
+            const alertBox = document.getElementById('lowStockAlert');
+            const itemsContainer = document.getElementById('lowStockItems');
             
-            const newQuantity = prompt('Enter new quantity:', sale.quantity);
-            if (newQuantity !== null && newQuantity !== '') {
-                sale.quantity = parseInt(newQuantity);
-                saveData();
-                updateUI();
-                showToast('✅ Sale updated!', 'success');
+            if (lowStock.length > 0) {
+                alertBox.classList.add('show');
+                itemsContainer.innerHTML = lowStock.map(s => 
+                    `<div class="alert-item">${s.product} (${s.quantity} left)</div>`
+                ).join('');
+            } else {
+                alertBox.classList.remove('show');
             }
         }
 
-        function deleteSale(saleId) {
-            const sale = sales.find(s => s.id === saleId);
-            if (!sale) return;
-            
-            // Check if user has permission
-            if (currentSession.role !== 'owner' && sale.userId !== currentSession.id) {
-                showToast('❌ You can only delete your own sales!', 'error');
-                return;
-            }
-            
-            if (confirm('Delete this product?')) {
-                sales = sales.filter(s => s.id !== saleId);
-                saveData();
-                updateUI();
-                showToast('🗑️ Product deleted', 'info');
-            }
-        }
-
-        function clearAllData() {
-            if (currentSession.role !== 'owner') {
-                showToast('❌ Only owner can clear all data!', 'error');
-                return;
-            }
-            
-            if (confirm('⚠️ WARNING: This will delete ALL sales data! Are you sure?')) {
-                if (confirm('This action cannot be undone. Continue?')) {
-                    sales = [];
-                    saveData();
-                    updateUI();
-                    showToast('🗑️ All data cleared!', 'warning');
-                }
-            }
-        }
-
+        // =================== EXPORT DATA ===================
+        
         function exportToCSV() {
-            let filteredSales = sales;
-            if (currentSession.role !== 'owner') {
-                filteredSales = sales.filter(s => s.userId === currentSession.id);
-            }
+            const filtered = getFilteredSales();
             
-            if (filteredSales.length === 0) {
-                showToast('❌ No data to export!', 'error');
+            if (filtered.length === 0) {
+                showToast('⚠️ No data to export', 'warning');
                 return;
             }
             
-            const headers = ['Date', 'Product', 'Category', 'Subcategory', 'Quantity', 'Price', 'Total', 'Sold', 'Admin'];
-            const rows = filteredSales.map(sale => [
-                sale.date,
-                sale.productName,
-                sale.category,
-                sale.subcategory,
-                sale.quantity,
-                sale.price,
-                sale.price * sale.quantity,
-                sale.soldStatus === 'yes' ? 'Yes' : 'No',
-                sale.userName
-            ]);
+            // CSV Header
+            let csv = 'Date,Admin,Product,Category,Subcategory,Quantity,Price,Total,Sold\n';
             
-            let csv = headers.join(',') + '\n';
-            csv += rows.map(row => row.join(',')).join('\n');
+            // CSV Rows
+            filtered.forEach(sale => {
+                csv += `${sale.date},${sale.userName},"${sale.product}",${sale.categoryName},${sale.subcategoryName},${sale.quantity},${sale.price},${(sale.price * sale.quantity).toFixed(2)},${sale.sold ? 'Yes' : 'No'}\n`;
+            });
             
+            // Download
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `sales_${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `sales_export_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
+            window.URL.revokeObjectURL(url);
             
             showToast('📥 CSV exported successfully!', 'success');
         }
-        // ==================== MODAL MANAGEMENT ====================
-        function openUserModal() {
-            document.getElementById('userModal').classList.add('show');
-            renderUserList();
-            renderPayoutList();
+
+        // =================== CLEAR ALL DATA ===================
+        
+        function clearAllData() {
+            if (!confirm('⚠️ WARNING: This will delete ALL sales data permanently! Are you absolutely sure?')) {
+                return;
+            }
+            
+            if (!confirm('This action CANNOT be undone. Type YES in the next prompt to confirm.')) {
+                return;
+            }
+            
+            const confirmation = prompt('Type "DELETE ALL" to confirm deletion:');
+            if (confirmation !== 'DELETE ALL') {
+                showToast('❌ Deletion cancelled', 'info');
+                return;
+            }
+            
+            // Clear sales from Firebase
+            const userKey = currentSession.username.replace(/[.#$/[\]]/g, '_');
+            database.ref('sales/' + userKey).remove()
+                .then(() => {
+                    showToast('🗑️ All data cleared!', 'info');
+                    updateUI();
+                })
+                .catch((error) => {
+                    showToast('❌ Error: ' + error.message, 'error');
+                });
         }
 
+        // =================== EVENT LISTENERS ===================
+        
+        function setupEventListeners() {
+            // Period Tabs
+            document.querySelectorAll('.period-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    updateUI();
+                });
+            });
+            
+            // Form Tabs
+            document.querySelectorAll('.form-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.form-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab + 'Form').classList.add('active');
+                });
+            });
+            
+            // Category change - update subcategories
+            document.getElementById('productCategory').addEventListener('change', updateSubcategoryOptions);
+            
+            // Search
+            document.getElementById('searchInput').addEventListener('input', renderSalesTable);
+            
+            // User filter (owner only)
+            document.getElementById('userFilter').addEventListener('change', updateUI);
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.id === 'filterAll' || this.id === 'filterSold' || this.id === 'filterStock') {
+                        document.querySelectorAll('.filter-btn').forEach(b => {
+                            if (b.id === 'filterAll' || b.id === 'filterSold' || b.id === 'filterStock') {
+                                b.classList.remove('active');
+                            }
+                        });
+                        this.classList.add('active');
+                        renderSalesTable();
+                    }
+                });
+            });
+            
+            // Top nav buttons
+            document.getElementById('btnUsers').addEventListener('click', () => {
+                document.getElementById('userModal').classList.add('show');
+                renderUserList();
+                renderPayoutList();
+            });
+            
+            document.getElementById('btnTheme').addEventListener('click', () => {
+                const themes = ['theme-purple', 'theme-blue', 'theme-green', 'theme-pink', 'theme-orange'];
+                const currentIndex = themes.indexOf(settings.theme);
+                settings.theme = themes[(currentIndex + 1) % themes.length];
+                applySettings();
+                const username = currentSession.username;
+                database.ref('settings/' + username).set(settings);
+                showToast('🎨 Theme changed!', 'success');
+            });
+            
+            document.getElementById('btnSettings').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.add('show');
+            });
+            
+            document.getElementById('btnDark').addEventListener('click', () => {
+                settings.darkMode = !settings.darkMode;
+                applySettings();
+                const username = currentSession.username;
+                database.ref('settings/' + username).set(settings);
+                showToast(settings.darkMode ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', 'info');
+            });
+            
+            document.getElementById('toggleDarkMode').addEventListener('click', () => {
+                settings.darkMode = !settings.darkMode;
+                applySettings();
+                const username = currentSession.username;
+                database.ref('settings/' + username).set(settings);
+            });
+            
+            document.getElementById('btnLang').addEventListener('click', () => {
+                settings.language = settings.language === 'en' ? 'tl' : 'en';
+                applySettings();
+                const username = currentSession.username;
+                database.ref('settings/' + username).set(settings);
+                showToast(settings.language === 'en' ? '🌐 English' : '🌐 Tagalog', 'info');
+            });
+            
+            document.getElementById('btnLogout').addEventListener('click', () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('session');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.getElementById('btnClearAll').addEventListener('click', clearAllData);
+            document.getElementById('btnExport').addEventListener('click', exportToCSV);
+        }
+
+        // =================== MODAL FUNCTIONS ===================
+        
         function closeUserModal() {
             document.getElementById('userModal').classList.remove('show');
-        }
-
-        function openSettingsModal() {
-            document.getElementById('settingsModal').classList.add('show');
         }
 
         function closeSettingsModal() {
             document.getElementById('settingsModal').classList.remove('show');
         }
 
-        function saveSettings() {
-            settings.theme = document.getElementById('themeSelect').value;
-            settings.font = document.getElementById('fontSelect').value;
-            settings.headingFont = document.getElementById('headingFontSelect').value;
-            settings.language = document.getElementById('languageSelect').value;
-            settings.lowStockThreshold = parseInt(document.getElementById('lowStockThreshold').value);
-            
-            saveData();
-            applySettings();
-            updateUI();
-            showToast('✅ Settings saved!', 'success');
-            closeSettingsModal();
-        }
+        // Close modals on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
 
-        // ==================== THEME & UI ====================
-        function toggleDarkMode() {
-            settings.darkMode = !settings.darkMode;
-            saveData();
-            
-            if (settings.darkMode) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('btnDark').textContent = '☀️ Light';
-            } else {
-                document.body.classList.remove('dark-mode');
-                document.getElementById('btnDark').textContent = '🌙 Dark';
-            }
-        }
-
-        function cycleTheme() {
-            const themes = ['theme-purple', 'theme-blue', 'theme-green', 'theme-pink', 'theme-orange'];
-            const currentThemeIndex = themes.indexOf(settings.theme);
-            const nextThemeIndex = (currentThemeIndex + 1) % themes.length;
-            
-            settings.theme = themes[nextThemeIndex];
-            saveData();
-            applySettings();
-            
-            const themeNames = {
-                'theme-purple': '💜 Purple',
-                'theme-blue': '💙 Blue',
-                'theme-green': '💚 Green',
-                'theme-pink': '💗 Pink',
-                'theme-orange': '🧡 Orange'
-            };
-            
-            showToast(`Theme changed to ${themeNames[settings.theme]}`, 'info');
-        }
-
-        function addSparkles() {
-            const sparkleEmojis = ['✨', '💫', '⭐', '🌟', '💖', '🦋', '🌸', '🎀'];
-            
-            for (let i = 0; i < 8; i++) {
-                const sparkle = document.createElement('div');
-                sparkle.className = 'sparkles';
-                sparkle.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
-                sparkle.style.left = Math.random() * 100 + '%';
-                sparkle.style.top = Math.random() * 100 + '%';
-                sparkle.style.animationDelay = Math.random() * 3 + 's';
-                sparkle.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                document.body.appendChild(sparkle);
-            }
-        }
-
-        // ==================== NOTIFICATIONS ====================
+        // =================== TOAST NOTIFICATION ===================
+        
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            const toastIcon = document.getElementById('toastIcon');
-            const toastMessage = document.getElementById('toastMessage');
-
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+            
             const icons = {
                 success: '✅',
                 error: '❌',
                 info: 'ℹ️',
                 warning: '⚠️'
             };
-
-            toast.className = `toast ${type}`;
-            toastIcon.textContent = icons[type] || '✓';
-            toastMessage.textContent = message;
-            toast.classList.add('show');
-
+            
+            icon.textContent = icons[type];
+            msg.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
 
-        // ==================== LANGUAGE SUPPORT ====================
-        const translations = {
-            en: {
-                dashboard: 'Sales Tracker Dashboard',
-                subtitle: 'Track your sales and inventory',
-                addProduct: 'Add Product',
-                addCategory: 'Add Category',
-                addSubcategory: 'Add Subcategory',
-                totalSales: 'Total Sales',
-                totalProducts: 'Total Products',
-                itemsSold: 'Items Sold',
-                avgSale: 'Average Sale',
-                myEarnings: 'My Earnings',
-                profitRate: 'Profit Rate'
-            },
-            tl: {
-                dashboard: 'Sales Tracker Dashboard',
-                subtitle: 'Subaybayan ang iyong benta at imbentaryo',
-                addProduct: 'Magdagdag ng Produkto',
-                addCategory: 'Magdagdag ng Kategorya',
-                addSubcategory: 'Magdagdag ng Subkategorya',
-                totalSales: 'Kabuuang Benta',
-                totalProducts: 'Kabuuang Produkto',
-                itemsSold: 'Nabentang Aytem',
-                avgSale: 'Average na Benta',
-                myEarnings: 'Aking Kita',
-                profitRate: 'Rate ng Tubo'
-            }
-        };
-
-        function changeLanguage() {
-            const currentLang = settings.language;
-            settings.language = currentLang === 'en' ? 'tl' : 'en';
-            saveData();
+        // =================== DECORATIVE SPARKLES ===================
+        
+        function addSparkles() {
+            const sparkles = ['✨', '💫', '⭐', '🌟', '💎', '🔮'];
+            const container = document.querySelector('.app-container');
             
-            document.getElementById('btnLang').textContent = settings.language === 'en' ? '🌐 EN' : '🌐 TL';
-            showToast(settings.language === 'en' ? '🇬🇧 English' : '🇵🇭 Tagalog', 'info');
-        }
-
-        // Add language toggle to button
-        document.getElementById('btnLang').addEventListener('click', changeLanguage);
-
-        // ==================== KEYBOARD SHORTCUTS ====================
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + K for search
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('searchInput').focus();
-            }
-            
-            // Ctrl/Cmd + N for new product
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                document.getElementById('productName').focus();
-            }
-            
-            // Escape to close modals
-            if (e.key === 'Escape') {
-                closeUserModal();
-                closeSettingsModal();
-            }
-        });
-
-        // ==================== AUTO SAVE ====================
-        let autoSaveInterval;
-
-        function startAutoSave() {
-            autoSaveInterval = setInterval(() => {
-                saveData();
-                console.log('✅ Auto-saved at', new Date().toLocaleTimeString());
-            }, 60000); // Auto-save every 1 minute
-        }
-
-        // ==================== BACKUP & RESTORE ====================
-        function createBackup() {
-            const backup = {
-                sales: sales,
-                categories: categories,
-                subcategories: subcategories,
-                users: users,
-                payouts: payouts,
-                settings: settings,
-                timestamp: new Date().toISOString()
-            };
-            
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            
-            showToast('💾 Backup created successfully!', 'success');
-        }
-
-        function restoreBackup() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = (event) => {
-                    try {
-                        const backup = JSON.parse(event.target.result);
-                        
-                        if (confirm('⚠️ This will replace all current data. Continue?')) {
-                            sales = backup.sales || [];
-                            categories = backup.categories || [];
-                            subcategories = backup.subcategories || [];
-                            users = backup.users || [];
-                            payouts = backup.payouts || [];
-                            settings = backup.settings || settings;
-                            
-                            saveData();
-                            applySettings();
-                            updateUI();
-                            
-                            showToast('✅ Backup restored successfully!', 'success');
-                        }
-                    } catch (error) {
-                        showToast('❌ Invalid backup file!', 'error');
-                    }
-                };
-                
-                reader.readAsText(file);
-            };
-            
-            input.click();
-        }
-
-        // ==================== PRINT FUNCTIONALITY ====================
-        function printSalesReport() {
-            window.print();
-        }
-
-        // ==================== INITIALIZE APP ====================
-        window.addEventListener('DOMContentLoaded', () => {
-            init();
-            startAutoSave();
-            
-            // Add print styles
-            const style = document.createElement('style');
-            style.textContent = `
-                @media print {
-                    body { background: white !important; }
-                    .top-nav, .btn-small, .action-btn, .sparkles { display: none !important; }
-                    .app-container { max-width: 100% !important; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Welcome message
-            setTimeout(() => {
-                showToast(`👋 Welcome back, ${currentSession.customName}!`, 'success');
-            }, 500);
-        });
-
-        // ==================== BEFOREUNLOAD WARNING ====================
-        window.addEventListener('beforeunload', (e) => {
-            // Save data before leaving
-            saveData();
-        });
-
-        // ==================== ERROR HANDLING ====================
-        window.addEventListener('error', (e) => {
-            console.error('Error:', e.error);
-            showToast('❌ An error occurred. Please refresh the page.', 'error');
-        });
-
-        // ==================== SERVICE WORKER (PWA Ready) ====================
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(() => {
-                console.log('✅ Service Worker registered');
-            }).catch(() => {
-                console.log('❌ Service Worker registration failed');
-            });
-        }
-
-        // ==================== CONSOLE EASTER EGG ====================
-        console.log('%c🍄 Maison Étoile Sales Tracker', 'font-size: 24px; color: #8B5CF6; font-weight: bold;');
-        console.log('%cDeveloped with 💜 by Adeebaabkhan', 'font-size: 14px; color: #EC4899;');
-        console.log('%cKeyboard Shortcuts:', 'font-size: 12px; font-weight: bold;');
-        console.log('%c  Ctrl/Cmd + K: Focus Search', 'font-size: 11px;');
-        console.log('%c  Ctrl/Cmd + N: New Product', 'font-size: 11px;');
-        console.log('%c  Escape: Close Modals', 'font-size: 11px;');
-
-        // ==================== ANALYTICS (Optional) ====================
-        function trackEvent(eventName, data) {
-            console.log(`📊 Event: ${eventName}`, data);
-            // Add your analytics code here (Google Analytics, etc.)
-        }
-
-        // Track user actions
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('btn')) {
-                trackEvent('button_click', { button: e.target.textContent });
-            }
-        });
-
-        // ==================== ADDITIONAL UTILITY FUNCTIONS ====================
-        function formatCurrency(amount) {
-            return '₱' + amount.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Apply debounce to search
-        const debouncedSearch = debounce(() => {
-            renderSalesTable();
-        }, 300);
-
-        document.getElementById('searchInput').addEventListener('input', debouncedSearch);
-
-        // ==================== MOBILE OPTIMIZATIONS ====================
-        if ('ontouchstart' in window) {
-            document.body.classList.add('touch-device');
-        }
-
-        // Prevent double-tap zoom on iOS
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (e) => {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-
-        // ==================== PERFORMANCE MONITORING ====================
-        window.addEventListener('load', () => {
-            const loadTime = performance.now();
-            console.log(`⚡ Page loaded in ${loadTime.toFixed(2)}ms`);
-            
-            if (loadTime > 3000) {
-                console.warn('⚠️ Slow page load detected');
-            }
-        });
-
-        // ==================== EXPERIMENTAL FEATURES ====================
-        // Dark mode auto-detection
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            if (!localStorage.getItem('settings')) {
-                settings.darkMode = true;
-                saveData();
-                applySettings();
+            for (let i = 0; i < 8; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkles';
+                sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(sparkle);
             }
         }
 
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (confirm('System theme changed. Update app theme?')) {
-                settings.darkMode = e.matches;
-                saveData();
-                applySettings();
-            }
-        });
-
-        console.log('✅ Dashboard fully loaded and ready!');
+        // =================== INITIALIZE APP ===================
+        
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
