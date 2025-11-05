@@ -1546,26 +1546,67 @@
             settings = JSON.parse(localStorage.getItem('settings') || JSON.stringify(settings));
             
             // Initialize default categories if empty
-            if (categories.length === 0) {
-                categories = [
-                    { id: 1, name: 'Electronics', icon: '📱' },
-                    { id: 2, name: 'Clothing', icon: '👕' },
-                    { id: 3, name: 'Food', icon: '🍕' },
-                    { id: 4, name: 'Books', icon: '📚' }
-                ];
+// Initialize default categories if empty
+if (categories.length === 0) {
+    categories = [
+        { id: 1, name: 'Streaming Accounts', icon: '🎬' },
+        { id: 2, name: 'Design Tools', icon: '🎨' },
+        { id: 3, name: 'Education Premium', icon: '📚' },
+        { id: 4, name: 'Music Apps', icon: '🎵' },
+        { id: 5, name: 'Gaming', icon: '🎮' },
+        { id: 6, name: 'VPN Services', icon: '🔐' },
+        { id: 7, name: 'Cloud Storage', icon: '☁️' },
+        { id: 8, name: 'Productivity', icon: '💼' }
+    ];
                 localStorage.setItem('categories', JSON.stringify(categories));
             }
             
-            // Initialize default subcategories if empty
-            if (subcategories.length === 0) {
-                subcategories = [
-                    { id: 1, categoryId: 1, name: 'Phones' },
-                    { id: 2, categoryId: 1, name: 'Laptops' },
-                    { id: 3, categoryId: 2, name: 'T-Shirts' },
-                    { id: 4, categoryId: 2, name: 'Jeans' },
-                    { id: 5, categoryId: 3, name: 'Pizza' },
-                    { id: 6, categoryId: 4, name: 'Fiction' }
-                ];
+// Initialize default subcategories if empty
+if (subcategories.length === 0) {
+    subcategories = [
+        // Streaming Accounts
+        { id: 1, categoryId: 1, name: 'Netflix' },
+        { id: 2, categoryId: 1, name: 'Disney+' },
+        { id: 3, categoryId: 1, name: 'HBO Max' },
+        { id: 4, categoryId: 1, name: 'Amazon Prime' },
+        { id: 5, categoryId: 1, name: 'Hulu' },
+        
+        // Design Tools
+        { id: 6, categoryId: 2, name: 'CapCut Pro' },
+        { id: 7, categoryId: 2, name: 'Canva Pro' },
+        { id: 8, categoryId: 2, name: 'Adobe Creative Cloud' },
+        { id: 9, categoryId: 2, name: 'Figma' },
+        
+        // Education Premium
+        { id: 10, categoryId: 3, name: 'Quizlet Plus' },
+        { id: 11, categoryId: 3, name: 'Duolingo Plus' },
+        { id: 12, categoryId: 3, name: 'Coursera Plus' },
+        { id: 13, categoryId: 3, name: 'Udemy' },
+        
+        // Music Apps
+        { id: 14, categoryId: 4, name: 'Spotify Premium' },
+        { id: 15, categoryId: 4, name: 'Apple Music' },
+        { id: 16, categoryId: 4, name: 'YouTube Music' },
+        
+        // Gaming
+        { id: 17, categoryId: 5, name: 'Steam Wallet' },
+        { id: 18, categoryId: 5, name: 'Xbox Game Pass' },
+        { id: 19, categoryId: 5, name: 'PlayStation Plus' },
+        
+        // VPN Services
+        { id: 20, categoryId: 6, name: 'NordVPN' },
+        { id: 21, categoryId: 6, name: 'ExpressVPN' },
+        
+        // Cloud Storage
+        { id: 22, categoryId: 7, name: 'Google Drive' },
+        { id: 23, categoryId: 7, name: 'Dropbox' },
+        { id: 24, categoryId: 7, name: 'iCloud' },
+        
+        // Productivity
+        { id: 25, categoryId: 8, name: 'Microsoft 365' },
+        { id: 26, categoryId: 8, name: 'Notion' },
+        { id: 27, categoryId: 8, name: 'Grammarly Premium' }
+    ];
                 localStorage.setItem('subcategories', JSON.stringify(subcategories));
             }
             
