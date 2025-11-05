@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Maison Étoile ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            --light: #F3F4F6;
+            --dark: #1F2937;
+            --white: #FFFFFF;
+            --shadow: rgba(139, 92, 246, 0.1);
+            --shadow-lg: rgba(139, 92, 246, 0.2);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 4px 20px var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .datetime-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px var(--shadow-lg);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.95em;
+            color: #6B7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #F3F4F6;
+        }
+
+        .section-title {
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #DC2626 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 15px 20px;
+            border: 3px solid #E5E7EB;
+            border-radius: 15px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: #F9FAFB;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+            background: white;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 20px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85em;
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: #F9FAFB;
+            transform: scale(1.01);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #F3F4F6;
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .close {
+            font-size: 2em;
+            cursor: pointer;
+            color: #9CA3AF;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideInRight 0.3s ease;
+            z-index: 3000;
+            max-width: 400px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast-success {
+            border-left: 6px solid var(--success);
+        }
+
+        .toast-error {
+            border-left: 6px solid var(--danger);
+        }
+
+        .toast-warning {
+            border-left: 6px solid var(--warning);
+        }
+
+        .toast-info {
+            border-left: 6px solid var(--info);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-warning {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .badge-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+        }
+
+        .action-btn-edit {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .action-btn-edit:hover {
+            background: #3B82F6;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn-delete {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .action-btn-delete:hover {
+            background: #EF4444;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn-view {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .action-btn-view:hover {
+            background: #10B981;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Product Card */
+        .product-card {
+            background: white;
+            border: 3px solid #F3F4F6;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px var(--shadow-lg);
+            transform: translateY(-5px);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F3F4F6;
+        }
+
+        .product-name {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-item {
+            background: #F9FAFB;
+            border: 2px solid #E5E7EB;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .category-item:hover {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .category-icon {
+            font-size: 2em;
+        }
+
+        .category-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .category-name {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--dark);
+        }
+
+        .category-price {
+            font-size: 0.9em;
+            color: #6B7280;
+            font-weight: 600;
+        }
+
+        .price-hidden {
+            color: var(--danger);
+            font-style: italic;
+        }
+
+        .category-stock {
+            background: #DBEAFE;
+            color: #1E40AF;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .stock-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stock-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stock-btn-plus {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .stock-btn-plus:hover {
+            background: #10B981;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .stock-btn-minus {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .stock-btn-minus:hover {
+            background: #EF4444;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9CA3AF;
+        }
+
+        .empty-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #F3F4F6;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #6B7280;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-info {
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .header-title {
+                font-size: 2em;
+            }
+
+            .section {
+                padding: 25px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .category-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .category-info {
+                width: 100%;
+            }
+
+            .stock-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                ✨ Maison Étoile
+            </div>
+            <div class="header-info">
+                <div class="datetime-display">
+                    <span>🕐</span>
+                    <span id="currentDateTime">Loading...</span>
+                </div>
+                <div class="user-display">
+                    <span>👤</span>
+                    <span id="currentUserDisplay">Loading...</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats Cards (Owner Only) -->
+        <div id="ownerStats" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">💰</span>
+                    <div class="stat-value" id="totalSales">$0</div>
+                    <div class="stat-label">Total Sales</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📈</span>
+                    <div class="stat-value" id="totalProfit">$0</div>
+                    <div class="stat-label">Total Profit</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-value" id="totalAdmins">0</div>
+                    <div class="stat-label">Total Admins</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">💸</span>
+                    <div class="stat-value" id="commissionsOwed">$0</div>
+                    <div class="stat-label">Commissions Owed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Stats (Admin Only) -->
+        <div id="adminStats" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">💰</span>
+                    <div class="stat-value" id="myBalance">$0</div>
+                    <div class="stat-label">My Balance</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📊</span>
+                    <div class="stat-value" id="mySalesToday">0</div>
+                    <div class="stat-label">Sales Today</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📈</span>
+                    <div class="stat-value" id="mySalesWeek">0</div>
+                    <div class="stat-label">Sales This Week</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🎯</span>
+                    <div class="stat-value" id="mySalesMonth">0</div>
+                    <div class="stat-label">Sales This Month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Management (Owner Only) -->
+        <div id="adminManagement" class="section" style="display: none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>👥</span>
+                    <span>Admin Management</span>
+                </div>
+                <button class="btn btn-primary" onclick="openAddAdminModal()">
+                    ➕ Add New Admin
+                </button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Commission %</th>
+                            <th>Sales</th>
+                            <th>Earnings</th>
+                            <th>Last Sale</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminsTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-icon">👥</div>
+                                <div class="empty-text">No admins yet. Add your first admin!</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>📦</span>
+                    <span>Products & Categories</span>
+                </div>
+                <button class="btn btn-primary" onclick="openAddProductModal()">
+                    ➕ Add New Product
+                </button>
+            </div>
+            <div id="productsContainer">
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <div class="empty-text">No products yet. Add your first product!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Record Sale Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>💰</span>
+                    <span>Record New Sale</span>
+                </div>
+            </div>
+            <form id="recordSaleForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>📦 Select Product</label>
+                        <select id="saleProduct" required onchange="loadCategories()">
+                            <option value="">-- Select Product --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📋 Select Category</label>
+                        <select id="saleCategory" required>
+                            <option value="">-- Select Category --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📧 Account Email Sold</label>
+                        <input type="email" id="saleAccountEmail" placeholder="example@email.com" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">
+                    ✅ Record Sale
+                </button>
+            </form>
+        </div>
+
+        <!-- Sales History -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>📊</span>
+                    <span id="salesHistoryTitle">All Sales History</span>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date/Time (UTC)</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Account Email</th>
+                            <th>Sold By</th>
+                            <th id="priceColumn">Price</th>
+                            <th>Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-icon">📊</div>
+                                <div class="empty-text">No sales yet. Record your first sale!</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payout Section (Owner Only) -->
+        <div id="payoutSection" class="section" style="display: none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>💸</span>
+                    <span>Payout Management</span>
+                </div>
+            </div>
+            <div class="form-grid" style="margin-bottom: 30px;">
+                <div class="form-group">
+                    <label>📅 Payout Frequency</label>
+                    <select id="payoutFrequency" onchange="updatePayoutSchedule()">
+                        <option value="weekly">Weekly (Every 7 days)</option>
+                        <option value="biweekly">Bi-Weekly (Every 14 days)</option>
+                        <option value="monthly" selected>Monthly (Every 30 days)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📆 Next Payout Date</label>
+                    <input type="text" id="nextPayoutDate" readonly style="background: #F3F4F6;">
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Admin</th>
+                            <th>Full Name</th>
+                            <th>Sales Count</th>
+                            <th>Commission Owed</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payoutTableBody">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div class="empty-icon">💸</div>
+                                <div class="empty-text">No pending payouts</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn btn-success" onclick="payAllAdmins()" style="font-size: 1.2em; padding: 18px 40px;">
+                    💸 Pay All Admins
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Admin Modal -->
+    <div id="addAdminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">➕ Add New Admin</div>
+                <span class="close" onclick="closeAddAdminModal()">&times;</span>
+            </div>
+            <form id="addAdminForm">
+                <div class="form-group">
+                    <label>👤 Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>🔒 Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                </div>
+                <div class="form-group">
+                    <label>📝 Full Name</label>
+                    <input type="text" id="adminName" placeholder="Enter full name" required>
+                </div>
+                <div class="form-group">
+                    <label>💰 Commission %</label>
+                    <input type="number" id="adminCommission" placeholder="e.g., 15" min="0" max="100" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                    ✅ Add Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">➕ Add New Product</div>
+                <span class="close" onclick="closeAddProductModal()">&times;</span>
+            </div>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label>📦 Product Name</label>
+                    <input type="text" id="productName" placeholder="e.g., Netflix" required>
+                </div>
+                <div class="form-group">
+                    <label>✨ Emoji</label>
+                    <input type="text" id="productEmoji" placeholder="e.g., 🎬" maxlength="2" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                    ✅ Add Product
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">➕ Add Category</div>
+                <span class="close" onclick="closeAddCategoryModal()">&times;</span>
+            </div>
+            <form id="addCategoryForm">
+                <input type="hidden" id="categoryProductId">
+                <div class="form-group">
+                    <label>📋 Category Name</label>
+                    <input type="text" id="categoryName" placeholder="e.g., 1 Profile, 3 Profiles" required>
+                </div>
+                <div class="form-group">
+                    <label>✨ Icon</label>
+                    <input type="text" id="categoryIcon" placeholder="e.g., 👤, 👥" maxlength="5" required>
+                </div>
+                <div class="form-group" id="sellPriceGroup">
+                    <label>💵 Sell Price</label>
+                    <input type="number" id="categorySellPrice" placeholder="e.g., 50" min="0" step="0.01" required>
+                </div>
+                <div class="form-group" id="buyCostGroup">
+                    <label>💰 Buy Cost</label>
+                    <input type="number" id="categoryBuyCost" placeholder="e.g., 30" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>📦 Stock</label>
+                    <input type="number" id="categoryStock" placeholder="e.g., 10" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                    ✅ Add Category
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
+            authDomain: "maisonetoile-5eee1.firebaseapp.com",
+            databaseURL: "https://maisonetoile-5eee1-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "maisonetoile-5eee1",
+            storageBucket: "maisonetoile-5eee1.firebasestorage.app",
+            messagingSenderId: "902250837280",
+            appId: "1:902250837280:web:0f61ccce4455ee90fdd345"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Session Check
+        const currentUser = sessionStorage.getItem('currentUser');
+        const userName = sessionStorage.getItem('userName');
+        const userRole = sessionStorage.getItem('userRole');
+
+        if (!currentUser || !userName || !userRole) {
+            window.location.href = 'index.html';
+        }
+
+        const isOwner = userRole === 'owner';
+        const isAdmin = userRole === 'admin';
+
+        // Update Current Date/Time (UTC)
+        function updateDateTime() {
+            const now = new Date();
+            const year = now.getUTCFullYear();
+            const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(now.getUTCDate()).padStart(2, '0');
+            const hours = String(now.getUTCHours()).padStart(2, '0');
+            const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+            
+            const formatted = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('currentDateTime').textContent = formatted;
+        }
+
+        // Update User Display
+        function updateUserDisplay() {
+            const roleText = isOwner ? '(Owner)' : '(Admin)';
+            document.getElementById('currentUserDisplay').textContent = `${userName} ${roleText}`;
+        }
+
+        // Initialize
+        function init() {
+            updateDateTime();
+            updateUserDisplay();
+            setInterval(updateDateTime, 1000);
+            
+            if (isOwner) {
+                document.getElementById('ownerStats').style.display = 'block';
+                document.getElementById('adminManagement').style.display = 'block';
+                document.getElementById('payoutSection').style.display = 'block';
+                loadOwnerDashboard();
+            } else {
+                document.getElementById('adminStats').style.display = 'block';
+                document.getElementById('priceColumn').textContent = 'Price (Hidden)';
+                document.getElementById('salesHistoryTitle').textContent = 'My Sales History';
+                // Hide price inputs for admins
+                document.getElementById('sellPriceGroup').style.display = 'none';
+                document.getElementById('buyCostGroup').style.display = 'none';
+                loadAdminDashboard();
+            }
+            
+            loadProducts();
+            loadSales();
+            setupForms();
+        }
+
+        // Load Owner Dashboard
+        function loadOwnerDashboard() {
+            // Load stats
+            database.ref('sales').once('value', snapshot => {
+                let totalSales = 0;
+                let totalProfit = 0;
+                let commissionsOwed = 0;
+                
+                snapshot.forEach(child => {
+                    const sale = child.val();
+                    if (sale.sellPrice) totalSales += parseFloat(sale.sellPrice);
+                    if (sale.profit) totalProfit += parseFloat(sale.profit);
+                    if (sale.adminCommission) commissionsOwed += parseFloat(sale.adminCommission);
+                });
+                
+                document.getElementById('totalSales').textContent = '$' + totalSales.toFixed(2);
+                document.getElementById('totalProfit').textContent = '$' + totalProfit.toFixed(2);
+                document.getElementById('commissionsOwed').textContent = '$' + commissionsOwed.toFixed(2);
+            });
+            
+            database.ref('admins').once('value', snapshot => {
+                document.getElementById('totalAdmins').textContent = snapshot.numChildren();
+            });
+            
+            loadAdmins();
+            loadPayoutData();
+        }
+
+        // Load Admin Dashboard
+        function loadAdminDashboard() {
+            database.ref('sales').orderByChild('soldBy').equalTo(currentUser).once('value', snapshot => {
+                let balance = 0;
+                let today = 0;
+                let week = 0;
+                let month = 0;
+                
+                const now = new Date();
+                const todayStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()).getTime();
+                const weekStart = todayStart - (7 * 24 * 60 * 60 * 1000);
+                const monthStart = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1).getTime();
+                
+                snapshot.forEach(child => {
+                    const sale = child.val();
+                    if (sale.adminCommission) balance += parseFloat(sale.adminCommission);
+                    
+                    const saleTime = new Date(sale.timestamp).getTime();
+                    if (saleTime >= todayStart) today++;
+                    if (saleTime >= weekStart) week++;
+                    if (saleTime >= monthStart) month++;
+                });
+                
+                document.getElementById('myBalance').textContent = '$' + balance.toFixed(2);
+                document.getElementById('mySalesToday').textContent = today;
+                document.getElementById('mySalesWeek').textContent = week;
+                document.getElementById('mySalesMonth').textContent = month;
+            });
+        }
+
+        // Load Admins
+        function loadAdmins() {
+            database.ref('admins').once('value', snapshot => {
+                const tbody = document.getElementById('adminsTableBody');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-icon">👥</div>
+                                <div class="empty-text">No admins yet. Add your first admin!</div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(child => {
+                    const admin = child.val();
+                    
+                    // Get sales count and earnings
+                    database.ref('sales').orderByChild('soldBy').equalTo(admin.username).once('value', salesSnapshot => {
+                        let salesCount = 0;
+                        let earnings = 0;
+                        let lastSale = 'Never';
+                        
+                        salesSnapshot.forEach(saleChild => {
+                            const sale = saleChild.val();
+                            salesCount++;
+                            if (sale.adminCommission) earnings += parseFloat(sale.adminCommission);
+                            lastSale = sale.timestamp;
+                        });
+                        
+                        const row = `
+                            <tr>
+                                <td><strong>${admin.username}</strong></td>
+                                <td>${admin.name}</td>
+                                <td><span class="badge badge-info">${admin.commission}%</span></td>
+                                <td>${salesCount}</td>
+                                <td><strong style="color: var(--success);">$${earnings.toFixed(2)}</strong></td>
+                                <td>${lastSale !== 'Never' ? formatDateTime(lastSale) : 'Never'}</td>
+                                <td>
+                                    <button class="action-btn action-btn-edit" onclick="editAdmin('${admin.username}')">✏️ Edit</button>
+                                    <button class="action-btn action-btn-delete" onclick="deleteAdmin('${admin.username}')">🗑️ Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                });
+            });
+        }
+
+        // Load Products
+        function loadProducts() {
+            database.ref('products').once('value', snapshot => {
+                const container = document.getElementById('productsContainer');
+                const select = document.getElementById('saleProduct');
+                
+                container.innerHTML = '';
+                select.innerHTML = '<option value="">-- Select Product --</option>';
+                
+                if (!snapshot.exists()) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <div class="empty-text">No products yet. Add your first product!</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(child => {
+                    const product = child.val();
+                    const productId = child.key;
+                    
+                    // Add to dropdown
+                    select.innerHTML += `<option value="${productId}">${product.emoji} ${product.name}</option>`;
+                    
+                    // Create product card
+                    let categoriesHTML = '';
+                    
+                    if (product.categories) {
+                        Object.keys(product.categories).forEach(catId => {
+                            const cat = product.categories[catId];
+                            
+                            const priceDisplay = isOwner 
+                                ? `Sell: $${cat.sellPrice} | Buy: $${cat.buyCost} | Profit: $${cat.profit}`
+                                : `<span class="price-hidden">Contact Owner for Pricing</span>`;
+                            
+                            categoriesHTML += `
+                                <div class="category-item">
+                                    <div class="category-info">
+                                        <div class="category-icon">${cat.icon}</div>
+                                        <div class="category-details">
+                                            <div class="category-name">${cat.name}</div>
+                                            <div class="category-price">${priceDisplay}</div>
+                                        </div>
+                                    </div>
+                                    <div class="category-stock">📦 Stock: ${cat.stock || 0}</div>
+                                    <div class="stock-actions">
+                                        <button class="stock-btn stock-btn-plus" onclick="adjustStock('${productId}', '${catId}', 1)">+</button>
+                                        <button class="stock-btn stock-btn-minus" onclick="adjustStock('${productId}', '${catId}', -1)">-</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    const card = `
+                        <div class="product-card">
+                            <div class="product-header">
+                                <div class="product-name">
+                                    <span>${product.emoji}</span>
+                                    <span>${product.name}</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" onclick="openAddCategoryModal('${productId}')">➕ Add Category</button>
+                                    <button class="action-btn action-btn-delete" onclick="deleteProduct('${productId}')">🗑️ Delete</button>
+                                </div>
+                            </div>
+                            ${categoriesHTML || '<div class="empty-state"><div class="empty-text">No categories yet</div></div>'}
+                        </div>
+                    `;
+                    
+                    container.innerHTML += card;
+                });
+            });
+        }
+
+        // Load Categories for Sale Form
+        function loadCategories() {
+            const productId = document.getElementById('saleProduct').value;
+            const select = document.getElementById('saleCategory');
+            
+            select.innerHTML = '<option value="">-- Select Category --</option>';
+            
+            if (!productId) return;
+            
+            database.ref(`products/${productId}/categories`).once('value', snapshot => {
+                snapshot.forEach(child => {
+                    const cat = child.val();
+                    const catId = child.key;
+                    
+                    if (cat.stock && cat.stock > 0) {
+                        select.innerHTML += `<option value="${catId}">${cat.icon} ${cat.name} (Stock: ${cat.stock})</option>`;
+                    }
+                });
+            });
+        }
+
+        // Load Sales
+        function loadSales() {
+            const query = isAdmin 
+                ? database.ref('sales').orderByChild('soldBy').equalTo(currentUser)
+                : database.ref('sales');
+                
+            query.once('value', snapshot => {
+                const tbody = document.getElementById('salesTableBody');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-icon">📊</div>
+                                <div class="empty-text">No sales yet. Record your first sale!</div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                const sales = [];
+                snapshot.forEach(child => {
+                    sales.push({ id: child.key, ...child.val() });
+                });
+                
+                // Sort by timestamp (newest first)
+                sales.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                sales.forEach(sale => {
+                    const priceDisplay = isOwner 
+                        ? `$${sale.sellPrice}`
+                        : `<span class="price-hidden">Hidden</span>`;
+                    
+                    const row = `
+                        <tr>
+                            <td>${formatDateTime(sale.timestamp)}</td>
+                            <td>${sale.productEmoji} ${sale.productName}</td>
+                            <td>${sale.categoryIcon} ${sale.categoryName}</td>
+                            <td>${sale.accountEmail}</td>
+                            <td><span class="badge badge-info">${sale.soldBy}</span></td>
+                            <td>${priceDisplay}</td>
+                            <td><strong style="color: var(--success);">$${sale.adminCommission.toFixed(2)}</strong></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            });
+        }
+
+        // Load Payout Data
+        function loadPayoutData() {
+            database.ref('admins').once('value', snapshot => {
+                const tbody = document.getElementById('payoutTableBody');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div class="empty-icon">💸</div>
+                                <div class="empty-text">No pending payouts</div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(child => {
+                    const admin = child.val();
+                    
+                    database.ref('sales').orderByChild('soldBy').equalTo(admin.username).once('value', salesSnapshot => {
+                        let salesCount = 0;
+                        let commission = 0;
+                        
+                        salesSnapshot.forEach(saleChild => {
+                            const sale = saleChild.val();
+                            if (!sale.paid) {
+                                salesCount++;
+                                if (sale.adminCommission) commission += parseFloat(sale.adminCommission);
+                            }
+                        });
+                        
+                        if (salesCount > 0) {
+                            const row = `
+                                <tr>
+                                    <td><strong>${admin.username}</strong></td>
+                                    <td>${admin.name}</td>
+                                    <td>${salesCount}</td>
+                                    <td><strong style="color: var(--success); font-size: 1.2em;">$${commission.toFixed(2)}</strong></td>
+                                    <td>
+                                        <button class="btn btn-success" onclick="payAdmin('${admin.username}')">💸 Pay</button>
+                                    </td>
+                                </tr>
+                            `;
+                            tbody.innerHTML += row;
+                        }
+                    });
+                });
+            });
+            
+            // Update next payout date
+            updateNextPayoutDate();
+        }
+
+        // Update Next Payout Date
+        function updateNextPayoutDate() {
+            database.ref('payoutSettings').once('value', snapshot => {
+                if (snapshot.exists()) {
+                    const settings = snapshot.val();
+                    document.getElementById('payoutFrequency').value = settings.frequency || 'monthly';
+                    document.getElementById('nextPayoutDate').value = settings.nextPayoutDate || 'Not set';
+                } else {
+                    // Set default
+                    const nextDate = new Date();
+                    nextDate.setDate(nextDate.getDate() + 30);
+                    const formatted = nextDate.toISOString().split('T')[0];
+                    
+                    database.ref('payoutSettings').set({
+                        frequency: 'monthly',
+                        lastPayoutDate: new Date().toISOString().split('T')[0],
+                        nextPayoutDate: formatted
+                    });
+                    
+                    document.getElementById('nextPayoutDate').value = formatted;
+                }
+            });
+        }
+
+        // Update Payout Schedule
+        function updatePayoutSchedule() {
+            const frequency = document.getElementById('payoutFrequency').value;
+            const lastDate = new Date();
+            const nextDate = new Date();
+            
+            if (frequency === 'weekly') {
+                nextDate.setDate(nextDate.getDate() + 7);
+            } else if (frequency === 'biweekly') {
+                nextDate.setDate(nextDate.getDate() + 14);
+            } else {
+                nextDate.setDate(nextDate.getDate() + 30);
+            }
+            
+            const formatted = nextDate.toISOString().split('T')[0];
+            
+            database.ref('payoutSettings').update({
+                frequency: frequency,
+                lastPayoutDate: lastDate.toISOString().split('T')[0],
+                nextPayoutDate: formatted
+            }).then(() => {
+                document.getElementById('nextPayoutDate').value = formatted;
+                showToast('✅ Payout schedule updated!', 'success');
+            });
+        }
+
+        // Setup Forms
+        function setupForms() {
+            // Add Admin Form
+            document.getElementById('addAdminForm').addEventListener('submit', e => {
+                e.preventDefault();
+                
+                const username = document.getElementById('adminUsername').value.trim();
+                const password = document.getElementById('adminPassword').value;
+                const name = document.getElementById('adminName').value.trim();
+                const commission = parseFloat(document.getElementById('adminCommission').value);
+                
+                database.ref('admins').child(username).once('value', snapshot => {
+                    if (snapshot.exists()) {
+                        showToast('❌ Username already exists!', 'error');
+                        return;
+                    }
+                    
+                    const adminData = {
+                        username,
+                        password,
+                        name,
+                        commission,
+                        role: 'admin',
+                        addedBy: currentUser,
+                        addedAt: getCurrentDateTime()
+                    };
+                    
+                    database.ref('admins').child(username).set(adminData).then(() => {
+                        showToast(`✅ Admin ${name} added successfully!`, 'success');
+                        closeAddAdminModal();
+                        document.getElementById('addAdminForm').reset();
+                        loadAdmins();
+                        loadOwnerDashboard();
+                    });
+                });
+            });
+            
+            // Add Product Form
+            document.getElementById('addProductForm').addEventListener('submit', e => {
+                e.preventDefault();
+                
+                const name = document.getElementById('productName').value.trim();
+                const emoji = document.getElementById('productEmoji').value.trim();
+                
+                const productData = {
+                    name,
+                    emoji,
+                    createdBy: currentUser,
+                    createdAt: getCurrentDateTime()
+                };
+                
+                database.ref('products').push(productData).then(() => {
+                    showToast(`✅ Product ${emoji} ${name} added!`, 'success');
+                    closeAddProductModal();
+                    document.getElementById('addProductForm').reset();
+                    loadProducts();
+                });
+            });
+            
+            // Add Category Form
+            document.getElementById('addCategoryForm').addEventListener('submit', e => {
+                e.preventDefault();
+                
+                const productId = document.getElementById('categoryProductId').value;
+                const name = document.getElementById('categoryName').value.trim();
+                const icon = document.getElementById('categoryIcon').value.trim();
+                const stock = parseInt(document.getElementById('categoryStock').value);
+                
+                const categoryData = {
+                    name,
+                    icon,
+                    stock,
+                    addedBy: currentUser,
+                    addedAt: getCurrentDateTime()
+                };
+                
+                // Owner adds prices
+                if (isOwner) {
+                    const sellPrice = parseFloat(document.getElementById('categorySellPrice').value);
+                    const buyCost = parseFloat(document.getElementById('categoryBuyCost').value);
+                    const profit = sellPrice - buyCost;
+                    
+                    categoryData.sellPrice = sellPrice;
+                    categoryData.buyCost = buyCost;
+                    categoryData.profit = profit;
+                }
+                
+                database.ref(`products/${productId}/categories`).push(categoryData).then(() => {
+                    showToast(`✅ Category ${icon} ${name} added!`, 'success');
+                    closeAddCategoryModal();
+                    document.getElementById('addCategoryForm').reset();
+                    loadProducts();
+                });
+            });
+            
+            // Record Sale Form
+            document.getElementById('recordSaleForm').addEventListener('submit', e => {
+                e.preventDefault();
+                
+                const productId = document.getElementById('saleProduct').value;
+                const categoryId = document.getElementById('saleCategory').value;
+                const accountEmail = document.getElementById('saleAccountEmail').value.trim();
+                
+                if (!productId || !categoryId) {
+                    showToast('❌ Please select product and category!', 'error');
+                    return;
+                }
+                
+                // Get product and category data
+                Promise.all([
+                    database.ref(`products/${productId}`).once('value'),
+                    database.ref(`products/${productId}/categories/${categoryId}`).once('value'),
+                    database.ref(`admins/${currentUser}`).once('value')
+                ]).then(([productSnap, categorySnap, adminSnap]) => {
+                    const product = productSnap.val();
+                    const category = categorySnap.val();
+                    
+                    if (category.stock <= 0) {
+                        showToast('❌ Out of stock!', 'error');
+                        return;
+                    }
+                    
+                    // Get commission rate
+                    let commissionRate = 0;
+                    if (isOwner) {
+                        commissionRate = 0; // Owner doesn't earn commission
+                    } else if (adminSnap.exists()) {
+                        commissionRate = adminSnap.val().commission;
+                    }
+                    
+                    const profit = category.profit || 0;
+                    const adminCommission = (profit * commissionRate) / 100;
+                    const ownerProfit = profit - adminCommission;
+                    
+                    const saleData = {
+                        timestamp: getCurrentDateTime(),
+                        productName: product.name,
+                        productEmoji: product.emoji,
+                        categoryName: category.name,
+                        categoryIcon: category.icon,
+                        accountEmail,
+                        soldBy: currentUser,
+                        soldByName: userName,
+                        sellPrice: category.sellPrice || 0,
+                        buyCost: category.buyCost || 0,
+                        profit,
+                        adminCommission,
+                        ownerProfit,
+                        paid: false
+                    };
+                    
+                    // Record sale
+                    database.ref('sales').push(saleData).then(() => {
+                        // Decrease stock
+                        database.ref(`products/${productId}/categories/${categoryId}/stock`).set(category.stock - 1);
+                        
+                        showToast(`✅ Sale recorded! Your commission: $${adminCommission.toFixed(2)}`, 'success');
+                        document.getElementById('recordSaleForm').reset();
+                        loadProducts();
+                        loadSales();
+                        if (isOwner) {
+                            loadOwnerDashboard();
+                        } else {
+                            loadAdminDashboard();
+                        }
+                    });
+                });
+            });
+        }
+
+        // Adjust Stock
+        function adjustStock(productId, categoryId, change) {
+            database.ref(`products/${productId}/categories/${categoryId}/stock`).once('value', snapshot => {
+                const currentStock = snapshot.val() || 0;
+                const newStock = Math.max(0, currentStock + change);
+                
+                database.ref(`products/${productId}/categories/${categoryId}/stock`).set(newStock).then(() => {
+                    showToast(`✅ Stock updated to ${newStock}`, 'success');
+                    loadProducts();
+                });
+            });
+        }
+
+        // Delete Product
+        function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            
+            database.ref(`products/${productId}`).remove().then(() => {
+                showToast('✅ Product deleted!', 'success');
+                loadProducts();
+            });
+        }
+
+        // Edit Admin
+        function editAdmin(username) {
+            database.ref(`admins/${username}`).once('value', snapshot => {
+                const admin = snapshot.val();
+                
+                const newName = prompt('Enter new name:', admin.name);
+                const newCommission = prompt('Enter new commission %:', admin.commission);
+                
+                if (newName && newCommission) {
+                    database.ref(`admins/${username}`).update({
+                        name: newName,
+                        commission: parseFloat(newCommission)
+                    }).then(() => {
+                        showToast('✅ Admin updated!', 'success');
+                        loadAdmins();
+                    });
+                }
+            });
+        }
+
+        // Delete Admin
+        function deleteAdmin(username) {
+            if (!confirm(`Are you sure you want to delete admin: ${username}?`)) return;
+            
+            database.ref(`admins/${username}`).remove().then(() => {
+                showToast('✅ Admin deleted!', 'success');
+                loadAdmins();
+                loadOwnerDashboard();
+            });
+        }
+
+        // Pay Admin
+        function payAdmin(username) {
+            if (!confirm(`Mark all sales by ${username} as paid?`)) return;
+            
+            database.ref('sales').orderByChild('soldBy').equalTo(username).once('value', snapshot => {
+                const updates = {};
+                
+                snapshot.forEach(child => {
+                    if (!child.val().paid) {
+                        updates[`sales/${child.key}/paid`] = true;
+                        updates[`sales/${child.key}/paidAt`] = getCurrentDateTime();
+                        updates[`sales/${child.key}/paidBy`] = currentUser;
+                    }
+                });
+                
+                database.ref().update(updates).then(() => {
+                    showToast(`✅ ${username} has been paid!`, 'success');
+                    loadPayoutData();
+                    loadOwnerDashboard();
+                });
+            });
+        }
+
+        // Pay All Admins
+        function payAllAdmins() {
+            if (!confirm('Mark ALL pending commissions as paid?')) return;
+            
+            database.ref('sales').orderByChild('paid').equalTo(false).once('value', snapshot => {
+                const updates = {};
+                let count = 0;
+                
+                snapshot.forEach(child => {
+                    updates[`sales/${child.key}/paid`] = true;
+                    updates[`sales/${child.key}/paidAt`] = getCurrentDateTime();
+                    updates[`sales/${child.key}/paidBy`] = currentUser;
+                    count++;
+                });
+                
+                if (count === 0) {
+                    showToast('❌ No pending payouts!', 'warning');
+                    return;
+                }
+                
+                database.ref().update(updates).then(() => {
+                    showToast(`✅ All admins paid! (${count} sales marked as paid)`, 'success');
+                    loadPayoutData();
+                    loadOwnerDashboard();
+                });
+            });
+        }
+
+        // Modal Functions
+        function openAddAdminModal() {
+            document.getElementById('addAdminModal').style.display = 'block';
+        }
+
+        function closeAddAdminModal() {
+            document.getElementById('addAdminModal').style.display = 'none';
+        }
+
+        function openAddProductModal() {
+            document.getElementById('addProductModal').style.display = 'block';
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').style.display = 'none';
+        }
+
+        function openAddCategoryModal(productId) {
+            document.getElementById('categoryProductId').value = productId;
+            document.getElementById('addCategoryModal').style.display = 'block';
+        }
+
+        function closeAddCategoryModal() {
+            document.getElementById('addCategoryModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast toast-' + type;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+
+        // Get Current DateTime (UTC - YYYY-MM-DD HH:MM:SS)
+        function getCurrentDateTime() {
+            const now = new Date();
+            const year = now.getUTCFullYear();
+            const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(now.getUTCDate()).padStart(2, '0');
+            const hours = String(now.getUTCHours()).padStart(2, '0');
+            const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Format DateTime for Display
+        function formatDateTime(datetime) {
+            if (!datetime) return 'N/A';
+            
+            try {
+                const date = new Date(datetime);
+                const year = date.getUTCFullYear();
+                const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(date.getUTCDate()).padStart(2, '0');
+                const hours = String(date.getUTCHours()).padStart(2, '0');
+                const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+                const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+                
+                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            } catch (e) {
+                return datetime;
+            }
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
