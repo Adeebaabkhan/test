@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Maison Étoile Sales Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --light: #f8f9fa;
+            --dark: #1f2937;
+            --text: #374151;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 15px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .navbar-brand {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            font-size: 1.5rem;
+        }
+
+        .user-details h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .theme-selector {
+            padding: 8px 15px;
+            border: 2px solid white;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn {
+            padding: 10px 25px;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 15px;
+            font-size: 0.85rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-message {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .product-category {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .product-stock {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .product-stock.low {
+            color: var(--danger);
+        }
+
+        .product-price {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .navbar-user {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        /* Color Themes */
+        body.theme-light-blue {
+            --primary: #3B82F6;
+            --secondary: #60A5FA;
+        }
+
+        body.theme-deep-blue {
+            --primary: #1E40AF;
+            --secondary: #3B82F6;
+        }
+
+        body.theme-rose-pink {
+            --primary: #EC4899;
+            --secondary: #F472B6;
+        }
+
+        body.theme-violet {
+            --primary: #8B5CF6;
+            --secondary: #A78BFA;
+        }
+
+        body.theme-teal {
+            --primary: #14B8A6;
+            --secondary: #2DD4BF;
+        }
+
+        body.theme-coral {
+            --primary: #F97316;
+            --secondary: #FB923C;
+        }
+
+        body.theme-mint {
+            --primary: #10B981;
+            --secondary: #34D399;
+        }
+
+        body.theme-red {
+            --primary: #EF4444;
+            --secondary: #F87171;
+        }
+
+        body.theme-dark-purple {
+            --primary: #6366F1;
+            --secondary: #818CF8;
+        }
+
+        body.theme-rainbow {
+            --primary: #F59E0B;
+            --secondary: #EC4899;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">Maison Étoile</div>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <span class="user-avatar" id="userAvatar">👤</span>
+                    <div class="user-details">
+                        <h4 id="userName">Loading...</h4>
+                        <p id="userRole">Role</p>
+                    </div>
+                </div>
+                <select class="theme-selector" id="themeSelector">
+                    <option value="default">🎨 Purple (Default)</option>
+                    <option value="light-blue">🔵 Light Blue</option>
+                    <option value="deep-blue">💙 Deep Blue</option>
+                    <option value="rose-pink">🌸 Rose Pink</option>
+                    <option value="violet">🍇 Violet</option>
+                    <option value="teal">🌊 Teal</option>
+                    <option value="coral">🍊 Coral</option>
+                    <option value="mint">💚 Mint Green</option>
+                    <option value="red">❤️ Red</option>
+                    <option value="dark-purple">🖤 Dark Purple</option>
+                    <option value="rainbow">🌈 Rainbow</option>
+                </select>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💰</span>
+                </div>
+                <div class="stat-label">Total Sales</div>
+                <div class="stat-value" id="statTotalSales">0</div>
+                <div class="stat-change">+0% from last week</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📦</span>
+                </div>
+                <div class="stat-label">Products Sold</div>
+                <div class="stat-value" id="statProductsSold">0</div>
+                <div class="stat-change">+0% from last week</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💵</span>
+                </div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value" id="statRevenue">₱0</div>
+                <div class="stat-change">+0% from last week</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📊</span>
+                </div>
+                <div class="stat-label">Total Stock</div>
+                <div class="stat-value" id="statStock">0</div>
+                <div class="stat-change">Available items</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💸</span>
+                </div>
+                <div class="stat-label">Your Commission</div>
+                <div class="stat-value" id="statCommission">₱0</div>
+                <div class="stat-change">Pending payout</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🎯</span>
+                </div>
+                <div class="stat-label">Total Profit</div>
+                <div class="stat-value" id="statProfit">₱0</div>
+                <div class="stat-change">+0% from last week</div>
+            </div>
+        </div>
+
+        <!-- Low Stock Alert -->
+        <div id="lowStockAlert"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('products')">📦 Products</button>
+            <button class="tab" onclick="switchTab('sales')">💰 Sales</button>
+            <button class="tab" onclick="switchTab('payouts')">💸 Payouts</button>
+            <button class="tab" onclick="switchTab('admins')" id="adminsTab" style="display:none;">👥 Admins</button>
+        </div>
+
+        <!-- Products Tab -->
+        <div id="productsTab" class="tab-content active">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📦 Products & Stock</h2>
+                    <button class="btn btn-primary" onclick="openAddProductModal()">+ Add Product</button>
+                </div>
+                <div id="productsContainer" class="products-grid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading products...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Tab -->
+        <div id="salesTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">💰 Sales Records</h2>
+                    <button class="btn btn-primary" onclick="openRecordSaleModal()">+ Record Sale</button>
+                </div>
+                <div class="table-container">
+                    <table id="salesTable">
+                        <thead>
+                            <tr>
+                                <th>📅 Date & Time</th>
+                                <th>📦 Product</th>
+                                <th>🏷️ Category</th>
+                                <th>📧 Account Sold</th>
+                                <th>💵 Price</th>
+                                <th>💰 Profit</th>
+                                <th>💸 Commission</th>
+                                <th>👤 Sold By</th>
+                                <th>⚙️ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                            <tr>
+                                <td colspan="9" class="loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading sales...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payouts Tab -->
+        <div id="payoutsTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">💸 Payout Management</h2>
+                    <button class="btn btn-success" onclick="markAsPaid()" id="markPaidBtn">✅ Mark as Paid & Reset</button>
+                </div>
+                <div id="payoutsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading payouts...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admins Tab (Owner Only) -->
+        <div id="adminsTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">👥 Admin Management</h2>
+                    <button class="btn btn-primary" onclick="openAddAdminModal()">+ Add Admin</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>👤 Username</th>
+                                <th>📛 Name</th>
+                                <th>🎭 Role</th>
+                                <th>💸 Commission %</th>
+                                <th>📅 Created</th>
+                                <th>⚙️ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading admins...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon" id="toastIcon">✅</span>
+        <span class="toast-message" id="toastMessage">Success!</span>
+    </div>
+
+    <!-- Modals will be added here via JavaScript -->
+
+    <!-- Firebase & App Script -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
