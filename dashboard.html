@@ -1303,7 +1303,7 @@
                         <span class="price-info-value" id="displayMargin">0%</span>
                     </div>
                     <div class="price-info-row">
-                        <span class="price-info-label">💸 Commission:</span>
+                        <span class="price-info-label">💸 Your Commission Rate:</span>
                         <span class="price-info-value" id="displayCommission">0%</span>
                     </div>
                     <div class="price-info-row">
@@ -1311,7 +1311,7 @@
                         <span class="price-info-value highlight" id="displayYourPrice">₱0.00</span>
                     </div>
                     <div class="price-info-row">
-                        <span class="price-info-label">🎯 Your Commission (Per Unit):</span>
+                        <span class="price-info-label">🎯 Your Profit (Per Unit):</span>
                         <span class="price-info-value highlight" id="displayCommissionAmount">₱0.00</span>
                     </div>
                 </div>
@@ -1371,7 +1371,7 @@
                         <span class="price-info-value" style="font-size: 1.5em; color: var(--success);" id="displayTotalSale">₱0.00</span>
                     </div>
                     <div class="price-info-row">
-                        <span class="price-info-label">🎯 Total You Earn:</span>
+                        <span class="price-info-label">🎯 Total Your Profit:</span>
                         <span class="price-info-value" style="font-size: 1.8em; color: var(--success);" id="displayTotalEarn">₱0.00</span>
                     </div>
                 </div>
@@ -1547,21 +1547,24 @@
                         <input type="text" id="newMargin" placeholder="Profit margin percentage" readonly style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); color: var(--success); font-weight: 800; cursor: not-allowed;">
                     </div>
                     
-                    <!-- AUTO-SET COMMISSION (READ-ONLY) -->
-                    <div class="form-group">
-                        <label>💸 Commission (%) <span style="color: var(--success); font-size: 0.9em;">✓ Auto-Set to 20%</span></label>
-                        <input type="text" id="newCommission" placeholder="Admin commission %" readonly value="20%" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); color: var(--warning); font-weight: 800; cursor: not-allowed;">
-                    </div>
-                    
                     <!-- PREVIEW CALCULATIONS -->
-                    <div class="price-info-card" id="productCalculation" style="display: none;">
+                    <div class="price-info-card" id="productCalculation" style="display: none; background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-color: var(--success);">
+                        <h3 style="color: var(--success); margin-bottom: 15px; text-align: center;">🎯 Your Profit Preview</h3>
                         <div class="price-info-row">
-                            <span class="price-info-label">💵 Admin Gets:</span>
-                            <span class="price-info-value" id="autoAdminPrice">₱0.00</span>
+                            <span class="price-info-label">💵 Your Profit Per Sale:</span>
+                            <span class="price-info-value highlight" id="autoProfit">₱0.00</span>
                         </div>
                         <div class="price-info-row">
-                            <span class="price-info-label">🎯 You Earn:</span>
-                            <span class="price-info-value" id="autoProfit">₱0.00</span>
+                            <span class="price-info-label">📊 Profit Margin:</span>
+                            <span class="price-info-value" id="autoProfitPercent">0%</span>
+                        </div>
+                        <div class="price-info-row" style="opacity: 0.7; font-size: 0.9em;">
+                            <span class="price-info-label">💡 Admin Price Example (20%):</span>
+                            <span class="price-info-value" id="autoAdminPrice20">₱0.00</span>
+                        </div>
+                        <div class="price-info-row" style="opacity: 0.7; font-size: 0.9em;">
+                            <span class="price-info-label">💡 Admin Price Example (30%):</span>
+                            <span class="price-info-value" id="autoAdminPrice30">₱0.00</span>
                         </div>
                     </div>
                     
@@ -1626,17 +1629,17 @@
                         <label>👤 Custom Name</label>
                         <input type="text" id="newUserName" placeholder="e.g., Sarah, Mike, Team A" required>
                     </div>
-                    <div class="form-group">
-                        <label>🔑 Username</label>
-                        <input type="text" id="newUsername" placeholder="Login username" required>
                     </div>
                     <div class="form-group">
                         <label>🔒 Password</label>
                         <input type="password" id="newPassword" placeholder="Password" required>
                     </div>
                     <div class="form-group">
-                        <label>💰 Profit % (0-100)</label>
-                        <input type="number" id="newProfitPercent" placeholder="25" min="0" max="100" required>
+                        <label>💰 Profit % (Admin's Commission Rate)</label>
+                        <input type="number" id="newProfitPercent" placeholder="e.g., 20 or 30" min="0" max="100" required>
+                        <small style="color: var(--text-color); opacity: 0.7; display: block; margin-top: 5px;">
+                            💡 This admin will earn this % from each sale
+                        </small>
                     </div>
                     <button type="submit" class="btn btn-success">➕ Add Admin</button>
                 </form>
@@ -1873,25 +1876,26 @@
         function autoCalculateProductFields() {
             const buyPrice = parseFloat(document.getElementById('newBuyPrice').value) || 0;
             const sellPrice = parseFloat(document.getElementById('newSellPrice').value) || 0;
-            const commission = 20; // AUTO-SET TO 20%
             
             if (buyPrice > 0 && sellPrice > 0) {
                 // AUTO-CALCULATE MARGIN
                 const margin = ((sellPrice - buyPrice) / buyPrice) * 100;
+                const profit = sellPrice - buyPrice;
                 
                 // AUTO-FILL THE MARGIN FIELD
                 document.getElementById('newMargin').value = margin.toFixed(2) + '%';
                 
-                // Calculate admin price
-                const commissionAmount = (sellPrice * commission) / 100;
-                const adminPrice = sellPrice - commissionAmount;
+                // Calculate example admin prices (for reference)
+                const commission20 = (sellPrice * 20) / 100;
+                const commission30 = (sellPrice * 30) / 100;
+                const adminPrice20 = sellPrice - commission20;
+                const adminPrice30 = sellPrice - commission30;
                 
-                // Calculate owner profit
-                const profit = sellPrice - buyPrice;
-                
-                // Update preview display
-                document.getElementById('autoAdminPrice').textContent = '₱' + adminPrice.toFixed(2);
+                // Update preview display - OWNER'S PROFIT
                 document.getElementById('autoProfit').textContent = '₱' + profit.toFixed(2);
+                document.getElementById('autoProfitPercent').textContent = margin.toFixed(2) + '%';
+                document.getElementById('autoAdminPrice20').textContent = '₱' + adminPrice20.toFixed(2);
+                document.getElementById('autoAdminPrice30').textContent = '₱' + adminPrice30.toFixed(2);
                 
                 document.getElementById('productCalculation').style.display = 'block';
             } else {
@@ -1935,7 +1939,6 @@
                 productName = selectValue;
             }
             
-            const commission = 20; // AUTO-SET TO 20%
             const margin = ((sellPrice - buyPrice) / buyPrice) * 100; // AUTO-CALCULATED
             
             const newProduct = {
@@ -1944,7 +1947,7 @@
                 buyPrice: buyPrice,
                 sellPrice: sellPrice,
                 margin: parseFloat(margin.toFixed(2)),
-                commission: commission,
+                // NO COMMISSION FIELD - Each admin has their own profit %
                 createdDate: new Date().toISOString().split('T')[0],
                 createdBy: currentSession.customName
             };
@@ -2009,9 +2012,12 @@
             select.innerHTML = '<option value="">-- Select Product --</option>';
             
             products.forEach(product => {
-                const commissionAmount = (product.sellPrice * product.commission) / 100;
+                // USE CURRENT USER'S PROFIT PERCENT
+                const userCommissionPercent = currentSession.profitPercent || 100; // Owner gets 100%
+                const commissionAmount = (product.sellPrice * userCommissionPercent) / 100;
                 const adminPrice = product.sellPrice - commissionAmount;
                 const displayPrice = currentSession.role === 'owner' ? product.sellPrice : adminPrice;
+                
                 select.innerHTML += `<option value="${product.id}">${product.name} - ₱${displayPrice.toFixed(2)}</option>`;
             });
         }
@@ -2026,9 +2032,13 @@
             }
             
             productList.innerHTML = products.map(product => {
-                const commissionAmount = (product.sellPrice * product.commission) / 100;
-                const adminPrice = product.sellPrice - commissionAmount;
                 const profit = product.sellPrice - product.buyPrice;
+                
+                // Show examples for different commission rates
+                const comm20 = (product.sellPrice * 20) / 100;
+                const comm30 = (product.sellPrice * 30) / 100;
+                const price20 = product.sellPrice - comm20;
+                const price30 = product.sellPrice - comm30;
                 
                 return `
                     <div class="product-item">
@@ -2053,16 +2063,16 @@
                                 <div class="product-detail-value">${product.margin}%</div>
                             </div>
                             <div class="product-detail">
-                                <div class="product-detail-label">💸 Commission</div>
-                                <div class="product-detail-value">${product.commission}%</div>
+                                <div class="product-detail-label">🎯 Your Profit</div>
+                                <div class="product-detail-value" style="color: var(--success); font-size: 1.3em;">₱${profit.toFixed(2)}</div>
                             </div>
                             <div class="product-detail">
-                                <div class="product-detail-label">👤 Admin Price</div>
-                                <div class="product-detail-value">₱${adminPrice.toFixed(2)}</div>
+                                <div class="product-detail-label">👤 Admin Price (20%)</div>
+                                <div class="product-detail-value">₱${price20.toFixed(2)}</div>
                             </div>
                             <div class="product-detail">
-                                <div class="product-detail-label">🎯 Owner Profit</div>
-                                <div class="product-detail-value">₱${profit.toFixed(2)}</div>
+                                <div class="product-detail-label">👤 Admin Price (30%)</div>
+                                <div class="product-detail-value">₱${price30.toFixed(2)}</div>
                             </div>
                         </div>
                     </div>
@@ -2098,29 +2108,31 @@
             
             const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
             
-            // Calculate prices
+            // Calculate prices BASED ON CURRENT USER'S PROFIT PERCENT
             const buyPrice = product.buyPrice;
             const sellPrice = product.sellPrice;
             const margin = product.margin;
-            const commission = product.commission;
-            const commissionAmount = (sellPrice * commission) / 100;
+            
+            // USE ADMIN'S PROFIT PERCENT FROM THEIR ACCOUNT
+            const userCommissionPercent = currentSession.profitPercent || 100; // Owner gets 100%
+            const commissionAmount = (sellPrice * userCommissionPercent) / 100;
             const adminPrice = sellPrice - commissionAmount;
             
             // Determine user's price
             const yourPrice = currentSession.role === 'owner' ? sellPrice : adminPrice;
-            const yourCommission = currentSession.role === 'owner' ? (sellPrice - buyPrice) : commissionAmount;
+            const yourProfit = currentSession.role === 'owner' ? (sellPrice - buyPrice) : commissionAmount;
             
             // Display product details
             document.getElementById('displayBuyPrice').textContent = '₱' + buyPrice.toFixed(2);
             document.getElementById('displaySellPrice').textContent = '₱' + sellPrice.toFixed(2);
             document.getElementById('displayMargin').textContent = margin.toFixed(2) + '%';
-            document.getElementById('displayCommission').textContent = commission + '%';
+            document.getElementById('displayCommission').textContent = userCommissionPercent + '% (Your Rate)';
             document.getElementById('displayYourPrice').textContent = '₱' + yourPrice.toFixed(2);
-            document.getElementById('displayCommissionAmount').textContent = '₱' + yourCommission.toFixed(2);
+            document.getElementById('displayCommissionAmount').textContent = '₱' + yourProfit.toFixed(2);
             
             // Calculate totals
             const totalSale = yourPrice * quantity;
-            const totalEarn = yourCommission * quantity;
+            const totalEarn = yourProfit * quantity;
             
             document.getElementById('displayTotalSale').textContent = '₱' + totalSale.toFixed(2);
             document.getElementById('displayTotalEarn').textContent = '₱' + totalEarn.toFixed(2);
@@ -2160,14 +2172,16 @@
             const quantity = parseInt(document.getElementById('productQuantity').value);
             const price = parseFloat(document.getElementById('productPrice').value);
             
-            // Calculate commission
-            const commissionAmount = (product.sellPrice * product.commission) / 100;
-            const yourCommission = currentSession.role === 'owner' ? (product.sellPrice - product.buyPrice) : commissionAmount;
+            // USE ADMIN'S PROFIT PERCENT FROM THEIR ACCOUNT
+            const userCommissionPercent = currentSession.profitPercent || 100;
+            const commissionAmount = (product.sellPrice * userCommissionPercent) / 100;
+            const yourProfit = currentSession.role === 'owner' ? (product.sellPrice - product.buyPrice) : commissionAmount;
             
             const newSale = {
                 id: Date.now(),
                 userId: currentSession.id,
                 userName: currentSession.customName,
+                userCommissionPercent: userCommissionPercent, // Store the rate used
                 date: new Date().toISOString().split('T')[0],
                 productId: productId,
                 product: product.name,
@@ -2177,7 +2191,7 @@
                 price: price,
                 buyPrice: product.buyPrice,
                 sellPrice: product.sellPrice,
-                commission: yourCommission,
+                commission: yourProfit,
                 sold: document.getElementById('productSoldStatus').value === 'yes'
             };
             
@@ -2402,7 +2416,7 @@
                         <div class="user-item-info">
                             <div class="user-item-name">${user.customName}</div>
                             <div class="user-item-details">
-                                @${user.username} • Profit: ${user.profitPercent}% • Earnings: ₱${totalCommission.toFixed(2)}
+                                @${user.username} • Commission: ${user.profitPercent}% • Total Earnings: ₱${totalCommission.toFixed(2)}
                             </div>
                         </div>
                         <div class="user-item-actions">
@@ -2469,7 +2483,14 @@
                 const mySales = soldItems.filter(s => s.userId === currentSession.id);
                 myEarnings = mySales.reduce((sum, s) => sum + ((s.commission || 0) * s.quantity), 0);
             } else {
-                myEarnings = totalSales;
+                // Owner earnings = total sales - all admin commissions
+                const allAdminCommissions = soldItems.reduce((sum, s) => {
+                    if (s.userId !== currentSession.id) {
+                        return sum + ((s.commission || 0) * s.quantity);
+                    }
+                    return sum;
+                }, 0);
+                myEarnings = totalSales - allAdminCommissions;
             }
             
             document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
