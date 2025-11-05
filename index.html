@@ -309,7 +309,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Firebase Configuration
+        // =================== APP CONFIGURATION ===================
+        const APP_NAME = 'sales-tracker'; // Unique name for Sales Tracker app
+
+        // =================== FIREBASE CONFIGURATION ===================
         const firebaseConfig = {
             apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
             authDomain: "maisonetoile-5eee1.firebaseapp.com",
@@ -320,9 +323,15 @@
             appId: "1:902250837280:web:f5ec72e6c5944da0fdd345"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        
+        // Helper function to get app-specific database reference
+        function getRef(path) {
+            return database.ref(APP_NAME + '/' + path);
+        }
+        
+        console.log('✅ Firebase initialized for app:', APP_NAME);
 
         // Initialize default owner in Firebase
         function initializeDefaultUsers() {
