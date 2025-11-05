@@ -275,43 +275,60 @@
     </div>
 
     <script>
-        // Initialize default users if not exists
-        function initializeDefaultUsers() {
-            if (!localStorage.getItem('users')) {
-                const defaultUsers = [
-                    {
-                        id: 1,
-                        customName: "Adeebaabkhan",
-                        username: "owner",
-                        password: "owner123",
-                        role: "owner",
-                        profitPercent: 100,
-                        createdDate: new Date().toISOString().split('T')[0]
-                    }
-                ];
-                localStorage.setItem('users', JSON.stringify(defaultUsers));
-            }
-        }
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
+    authDomain: "maisonetoile-5eee1.firebaseapp.com",
+    databaseURL: "https://maisonetoile-5eee1-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "maisonetoile-5eee1",
+    storageBucket: "maisonetoile-5eee1.firebasestorage.app",
+    messagingSenderId: "902250837280",
+    appId: "1:902250837280:web:0f61ccce4455ee90fdd345"
+};
 
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Initialize default owner in Firebase
+function initializeDefaultUsers() {
+    database.ref('users/owner').once('value')
+        .then((snapshot) => {
+            if (!snapshot.exists()) {
+                // Create default owner account in Firebase
+                const defaultOwner = {
+                    id: 1,
+                    customName: "Adeebaabkhan",
+                    username: "owner",
+                    password: "owner123",
+                    role: "owner",
+                    profitPercent: 100,
+                    createdDate: new Date().toISOString().split('T')[0]
+                };
+                return database.ref('users/owner').set(defaultOwner);
+            }
+        })
+        .catch((error) => {
+            console.error('Error initializing users:', error);
+        });
+}
         // Initialize on page load
         initializeDefaultUsers();
 
-        // Handle login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorMessage = document.getElementById('errorMessage');
+// NEW CODE - Login with Firebase
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMessage = document.getElementById('errorMessage');
 
-            // Get users from localStorage (includes owner + all admins)
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
+    // Authenticate against Firebase
+    database.ref('users/' + username).once('value')
+        .then((snapshot) => {
+            const user = snapshot.val();
             
-            // Find user by username AND password
-            const user = users.find(u => u.username === username && u.password === password);
-
-            if (user) {
-                // Store session with ALL required data
+            if (user && user.password === password) {
+                // Login successful - Store session
                 const session = {
                     id: user.id,
                     customName: user.customName,
@@ -322,16 +339,25 @@
                 };
                 localStorage.setItem('session', JSON.stringify(session));
                 
-                // Redirect to multi-user dashboard
+                // Redirect to dashboard
                 window.location.href = 'dashboard.html';
             } else {
-                // Show error
+                // Invalid credentials
                 errorMessage.classList.add('show');
                 setTimeout(() => {
                     errorMessage.classList.remove('show');
                 }, 3000);
             }
+        })
+        .catch((error) => {
+            console.error('Login error:', error);
+            errorMessage.textContent = 'Login error. Please try again.';
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 3000);
         });
+});
 
         // Check if already logged in
         const session = localStorage.getItem('session');
