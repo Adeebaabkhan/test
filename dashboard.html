@@ -1422,45 +1422,193 @@
         </div>
     </div>
 
-    <!-- Product Management Modal (Owner Only) -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>📦 Manage Products</h2>
-                <button class="close-btn" onclick="closeProductModal()">✕</button>
-            </div>
-            
-            <div class="form-section" style="border: none; box-shadow: none; padding: 0;">
-                <h3 class="section-title">➕ Add New Product</h3>
-                <form id="addProductForm" class="form-single-column">
-                    <div class="form-group">
-                        <label>📱 Product Name</label>
-                        <input type="text" id="newProductName" placeholder="e.g., CapCut Pro, Netflix" required>
-                    </div>
-                    <div class="form-group">
-                        <label>🛒 Buy Price (₱)</label>
-                        <input type="number" id="newBuyPrice" placeholder="How much you buy it for" step="0.01" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label>💰 Sell Price (₱)</label>
-                        <input type="number" id="newSellPrice" placeholder="How much you sell it for" step="0.01" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label>📊 Margin (%)</label>
-                        <input type="number" id="newMargin" placeholder="Profit margin percentage" min="0" max="100" required>
-                    </div>
-                    <div class="form-group">
-                        <label>💸 Commission (%)</label>
-                        <input type="number" id="newCommission" placeholder="Admin commission %" min="0" max="100" required>
-                    </div>
-                    <button type="submit" class="btn btn-success">➕ Add Product</button>
-                </form>
-            </div>
+// =================== PRODUCT MANAGEMENT (OWNER ONLY) ===================
 
-            <div class="section-title" style="margin-top: 30px;">📋 Product List</div>
-            <div class="product-list" id="productList"></div>
-        </div>
-    </div>
+// Auto-calculate margin and commission when prices change
+document.getElementById('newBuyPrice').addEventListener('input', autoCalculateProductFields);
+document.getElementById('newSellPrice').addEventListener('input', autoCalculateProductFields);
+
+function autoCalculateProductFields() {
+    const buyPrice = parseFloat(document.getElementById('newBuyPrice').value) || 0;
+    const sellPrice = parseFloat(document.getElementById('newSellPrice').value) || 0;
+    const commission = 20; // AUTO-SET TO 20%
+    
+    if (buyPrice > 0 && sellPrice > 0) {
+        // AUTO-CALCULATE MARGIN
+        const margin = ((sellPrice - buyPrice) / buyPrice) * 100;
+        
+        // AUTO-FILL THE MARGIN FIELD
+        document.getElementById('newMargin').value = margin.toFixed(2) + '%';
+        
+        // Calculate admin price
+        const commissionAmount = (sellPrice * commission) / 100;
+        const adminPrice = sellPrice - commissionAmount;
+        
+        // Calculate owner profit
+        const profit = sellPrice - buyPrice;
+        
+        // Update preview display
+        document.getElementById('autoAdminPrice').textContent = '₱' + adminPrice.toFixed(2);
+        document.getElementById('autoProfit').textContent = '₱' + profit.toFixed(2);
+        
+        document.getElementById('productCalculation').style.display = 'block';
+    } else {
+        // Clear fields if prices not valid
+        document.getElementById('newMargin').value = '';
+        document.getElementById('productCalculation').style.display = 'none';
+    }
+}
+
+// Add Product - MARGIN & COMMISSION AUTO-SET
+document.getElementById('addProductForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (currentSession.role !== 'owner') {
+        showToast('❌ Only owner can add products', 'error');
+        return;
+    }
+    
+    const buyPrice = parseFloat(document.getElementById('newBuyPrice').value);
+    const sellPrice = parseFloat(document.getElementById('newSellPrice').value);
+    
+    if (!buyPrice || !sellPrice) {
+        showToast('❌ Please enter buy and sell prices', 'error');
+        return;
+    }
+    
+    const commission = 20; // AUTO-SET TO 20%
+    const margin = ((sellPrice - buyPrice) / buyPrice) * 100; // AUTO-CALCULATED
+    
+    const newProduct = {
+        id: Date.now(),
+        name: document.getElementById('newProductName').value.trim(),
+        buyPrice: buyPrice,
+        sellPrice: sellPrice,
+        margin: parseFloat(margin.toFixed(2)), // AUTO-CALCULATED
+        commission: commission, // AUTO-SET TO 20%
+        createdDate: new Date().toISOString().split('T')[0],
+        createdBy: currentSession.customName
+    };
+    
+    database.ref('products/' + newProduct.id).set(newProduct)
+        .then(() => {
+            document.getElementById('addProductForm').reset();
+            document.getElementById('productCalculation').style.display = 'none';
+            showToast('✅ Product added successfully!', 'success');
+        })
+        .catch((error) => {
+            showToast('❌ Error: ' + error.message, 'error');
+        });
+});
+
+// Delete Product
+function deleteProduct(productId) {
+    if (currentSession.role !== 'owner') {
+        showToast('❌ Only owner can delete products', 'error');
+        return;
+    }
+    
+    if (confirm('Delete this product?')) {
+        database.ref('products/' + productId).remove()
+            .then(() => {
+                showToast('🗑️ Product deleted', 'info');
+            })
+            .catch((error) => {
+                showToast('❌ Error: ' + error.message, 'error');
+            });
+    }
+}
+
+// Edit Product
+function editProduct(productId) {
+    if (currentSession.role !== 'owner') {
+        showToast('❌ Only owner can edit products', 'error');
+        return;
+    }
+    
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    document.getElementById('newProductName').value = product.name;
+    document.getElementById('newBuyPrice').value = product.buyPrice;
+    document.getElementById('newSellPrice').value = product.sellPrice;
+    
+    // Trigger auto-calculation
+    autoCalculateProductFields();
+    
+    // Delete old product
+    database.ref('products/' + productId).remove();
+    
+    // Scroll to form
+    document.getElementById('productModal').scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('📝 Edit mode - Update product and save', 'info');
+}
+
+// Update Product Dropdown
+function updateProductDropdown() {
+    const select = document.getElementById('productSelect');
+    select.innerHTML = '<option value="">-- Select Product --</option>';
+    
+    products.forEach(product => {
+        const adminPrice = product.sellPrice - ((product.sellPrice * product.commission) / 100);
+        const displayPrice = currentSession.role === 'owner' ? product.sellPrice : adminPrice;
+        select.innerHTML += `<option value="${product.id}">${product.name} - ₱${displayPrice.toFixed(2)}</option>`;
+    });
+}
+
+// Render Product List
+function renderProductList() {
+    const productList = document.getElementById('productList');
+    
+    if (products.length === 0) {
+        productList.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><p>No products yet</p></div>';
+        return;
+    }
+    
+    productList.innerHTML = products.map(product => {
+        const commissionAmount = (product.sellPrice * product.commission) / 100;
+        const adminPrice = product.sellPrice - commissionAmount;
+        const profit = product.sellPrice - product.buyPrice;
+        
+        return `
+            <div class="product-item">
+                <div class="product-item-header">
+                    <div class="product-item-name">${product.name}</div>
+                    <div>
+                        <button class="action-btn edit-btn" onclick="editProduct(${product.id})">✏️ Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+                <div class="product-item-details">
+                    <div class="product-detail">
+                        <div class="product-detail-label">🛒 Buy Price</div>
+                        <div class="product-detail-value">₱${product.buyPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-detail-label">💰 Sell Price</div>
+                        <div class="product-detail-value">₱${product.sellPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-detail-label">📊 Margin</div>
+                        <div class="product-detail-value">${product.margin}%</div>
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-detail-label">💸 Commission</div>
+                        <div class="product-detail-value">${product.commission}%</div>
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-detail-label">👤 Admin Price</div>
+                        <div class="product-detail-value">₱${adminPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-detail-label">🎯 Your Profit</div>
+                        <div class="product-detail-value">₱${profit.toFixed(2)}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
     <!-- Calculator Modal -->
     <div class="modal" id="calculatorModal">
