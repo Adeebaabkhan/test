@@ -323,7 +323,7 @@
                 localStorage.setItem('session', JSON.stringify(session));
                 
                 // Redirect to dashboard
-                window.location.href = 'dashboard-multi.html';
+                window.location.href = 'dashboard.html';
             } else {
                 // Show error
                 errorMessage.classList.add('show');
@@ -336,7 +336,7 @@
         // Check if already logged in
         const session = localStorage.getItem('session');
         if (session) {
-            window.location.href = 'dashboard-multi.html';
+            window.location.href = 'dashboard.html';
         }
     </script>
 </body>
