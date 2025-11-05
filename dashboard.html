@@ -86,24 +86,24 @@
 
         .datetime-display {
             background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 20px;
             font-weight: 600;
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .user-display {
             background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 20px;
             font-weight: 600;
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .logout-btn {
@@ -615,11 +615,6 @@
             font-weight: 600;
         }
 
-        .price-hidden {
-            color: var(--danger);
-            font-style: italic;
-        }
-
         .category-stock {
             background: #DBEAFE;
             color: #1E40AF;
@@ -703,42 +698,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #F3F4F6;
-        }
-
-        .tab {
-            padding: 15px 30px;
-            cursor: pointer;
-            font-weight: 700;
-            color: #6B7280;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -3px;
-        }
-
-        .tab:hover {
-            color: var(--primary);
-        }
-
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeInUp 0.3s ease;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -803,11 +762,11 @@
             </div>
             <div class="header-info">
                 <div class="datetime-display">
-                    <span>🕐</span>
+                    <strong>Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted):</strong>
                     <span id="currentDateTime">Loading...</span>
                 </div>
                 <div class="user-display">
-                    <span>👤</span>
+                    <strong>Current User's Login:</strong>
                     <span id="currentUserDisplay">Loading...</span>
                 </div>
                 <button class="logout-btn" onclick="logout()">🚪 Logout</button>
@@ -974,7 +933,7 @@
                             <th>Category</th>
                             <th>Account Email</th>
                             <th>Sold By</th>
-                            <th id="priceColumn">Price</th>
+                            <th>Price</th>
                             <th>Commission</th>
                         </tr>
                     </thead>
@@ -1112,11 +1071,11 @@
                     <label>✨ Icon</label>
                     <input type="text" id="categoryIcon" placeholder="e.g., 👤, 👥" maxlength="5" required>
                 </div>
-                <div class="form-group" id="sellPriceGroup">
+                <div class="form-group">
                     <label>💵 Sell Price</label>
                     <input type="number" id="categorySellPrice" placeholder="e.g., 50" min="0" step="0.01" required>
                 </div>
-                <div class="form-group" id="buyCostGroup">
+                <div class="form-group">
                     <label>💰 Buy Cost</label>
                     <input type="number" id="categoryBuyCost" placeholder="e.g., 30" min="0" step="0.01" required>
                 </div>
@@ -1137,8 +1096,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <script>
+        <script>
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCa4XYpwePgiTWL30sSkIubYbWizTHwEQU",
@@ -1166,7 +1124,7 @@
         const isOwner = userRole === 'owner';
         const isAdmin = userRole === 'admin';
 
-        // Update Current Date/Time (UTC)
+        // Update Current Date/Time (UTC - YYYY-MM-DD HH:MM:SS formatted)
         function updateDateTime() {
             const now = new Date();
             const year = now.getUTCFullYear();
@@ -1180,10 +1138,9 @@
             document.getElementById('currentDateTime').textContent = formatted;
         }
 
-        // Update User Display
+        // Update User Display - Show username only
         function updateUserDisplay() {
-            const roleText = isOwner ? '(Owner)' : '(Admin)';
-            document.getElementById('currentUserDisplay').textContent = `${userName} ${roleText}`;
+            document.getElementById('currentUserDisplay').textContent = userName;
         }
 
         // Initialize
@@ -1199,11 +1156,7 @@
                 loadOwnerDashboard();
             } else {
                 document.getElementById('adminStats').style.display = 'block';
-                document.getElementById('priceColumn').textContent = 'Price (Hidden)';
                 document.getElementById('salesHistoryTitle').textContent = 'My Sales History';
-                // Hide price inputs for admins
-                document.getElementById('sellPriceGroup').style.display = 'none';
-                document.getElementById('buyCostGroup').style.display = 'none';
                 loadAdminDashboard();
             }
             
@@ -1224,7 +1177,7 @@
                     const sale = child.val();
                     if (sale.sellPrice) totalSales += parseFloat(sale.sellPrice);
                     if (sale.profit) totalProfit += parseFloat(sale.profit);
-                    if (sale.adminCommission) commissionsOwed += parseFloat(sale.adminCommission);
+                    if (sale.adminCommission && !sale.paid) commissionsOwed += parseFloat(sale.adminCommission);
                 });
                 
                 document.getElementById('totalSales').textContent = '$' + totalSales.toFixed(2);
@@ -1255,7 +1208,7 @@
                 
                 snapshot.forEach(child => {
                     const sale = child.val();
-                    if (sale.adminCommission) balance += parseFloat(sale.adminCommission);
+                    if (sale.adminCommission && !sale.paid) balance += parseFloat(sale.adminCommission);
                     
                     const saleTime = new Date(sale.timestamp).getTime();
                     if (saleTime >= todayStart) today++;
@@ -1288,33 +1241,49 @@
                     return;
                 }
                 
+                const promises = [];
                 snapshot.forEach(child => {
                     const admin = child.val();
                     
-                    // Get sales count and earnings
-                    database.ref('sales').orderByChild('soldBy').equalTo(admin.username).once('value', salesSnapshot => {
-                        let salesCount = 0;
-                        let earnings = 0;
-                        let lastSale = 'Never';
-                        
-                        salesSnapshot.forEach(saleChild => {
-                            const sale = saleChild.val();
-                            salesCount++;
-                            if (sale.adminCommission) earnings += parseFloat(sale.adminCommission);
-                            lastSale = sale.timestamp;
+                    const promise = database.ref('sales').orderByChild('soldBy').equalTo(admin.username).once('value')
+                        .then(salesSnapshot => {
+                            let salesCount = 0;
+                            let earnings = 0;
+                            let lastSale = 'Never';
+                            
+                            salesSnapshot.forEach(saleChild => {
+                                const sale = saleChild.val();
+                                salesCount++;
+                                if (sale.adminCommission && !sale.paid) earnings += parseFloat(sale.adminCommission);
+                                if (sale.timestamp) lastSale = sale.timestamp;
+                            });
+                            
+                            return {
+                                username: admin.username,
+                                name: admin.name,
+                                commission: admin.commission,
+                                salesCount,
+                                earnings,
+                                lastSale
+                            };
                         });
-                        
+                    
+                    promises.push(promise);
+                });
+                
+                Promise.all(promises).then(results => {
+                    results.forEach(data => {
                         const row = `
                             <tr>
-                                <td><strong>${admin.username}</strong></td>
-                                <td>${admin.name}</td>
-                                <td><span class="badge badge-info">${admin.commission}%</span></td>
-                                <td>${salesCount}</td>
-                                <td><strong style="color: var(--success);">$${earnings.toFixed(2)}</strong></td>
-                                <td>${lastSale !== 'Never' ? formatDateTime(lastSale) : 'Never'}</td>
+                                <td><strong>${data.username}</strong></td>
+                                <td>${data.name}</td>
+                                <td><span class="badge badge-info">${data.commission}%</span></td>
+                                <td>${data.salesCount}</td>
+                                <td><strong style="color: var(--success);">$${data.earnings.toFixed(2)}</strong></td>
+                                <td>${data.lastSale !== 'Never' ? formatDateTime(data.lastSale) : 'Never'}</td>
                                 <td>
-                                    <button class="action-btn action-btn-edit" onclick="editAdmin('${admin.username}')">✏️ Edit</button>
-                                    <button class="action-btn action-btn-delete" onclick="deleteAdmin('${admin.username}')">🗑️ Delete</button>
+                                    <button class="action-btn action-btn-edit" onclick="editAdmin('${data.username}')">✏️ Edit</button>
+                                    <button class="action-btn action-btn-delete" onclick="deleteAdmin('${data.username}')">🗑️ Delete</button>
                                 </td>
                             </tr>
                         `;
@@ -1347,33 +1316,42 @@
                     const product = child.val();
                     const productId = child.key;
                     
-                    // Add to dropdown
-                    select.innerHTML += `<option value="${productId}">${product.emoji} ${product.name}</option>`;
+                    const productName = product.name || 'Unnamed Product';
+                    const productEmoji = product.emoji || '📦';
                     
-                    // Create product card
+                    // Add to dropdown
+                    select.innerHTML += `<option value="${productId}">${productEmoji} ${productName}</option>`;
+                    
+                    // Create categories HTML
                     let categoriesHTML = '';
                     
                     if (product.categories) {
                         Object.keys(product.categories).forEach(catId => {
                             const cat = product.categories[catId];
                             
-                            const priceDisplay = isOwner 
-                                ? `Sell: $${cat.sellPrice} | Buy: $${cat.buyCost} | Profit: $${cat.profit}`
-                                : `<span class="price-hidden">Contact Owner for Pricing</span>`;
+                            const catName = cat.name || 'Unnamed Category';
+                            const catIcon = cat.icon || '📋';
+                            const catStock = cat.stock || 0;
+                            const catSellPrice = parseFloat(cat.sellPrice) || 0;
+                            const catBuyCost = parseFloat(cat.buyCost) || 0;
+                            const catProfit = parseFloat(cat.profit) || (catSellPrice - catBuyCost);
+                            
+                            // ADMINS CAN SEE PRICES TOO
+                            const priceDisplay = `Sell: $${catSellPrice.toFixed(2)} | Buy: $${catBuyCost.toFixed(2)} | Profit: $${catProfit.toFixed(2)}`;
                             
                             categoriesHTML += `
                                 <div class="category-item">
                                     <div class="category-info">
-                                        <div class="category-icon">${cat.icon}</div>
+                                        <div class="category-icon">${catIcon}</div>
                                         <div class="category-details">
-                                            <div class="category-name">${cat.name}</div>
+                                            <div class="category-name">${catName}</div>
                                             <div class="category-price">${priceDisplay}</div>
                                         </div>
                                     </div>
-                                    <div class="category-stock">📦 Stock: ${cat.stock || 0}</div>
+                                    <div class="category-stock">📦 Stock: ${catStock}</div>
                                     <div class="stock-actions">
-                                        <button class="stock-btn stock-btn-plus" onclick="adjustStock('${productId}', '${catId}', 1)">+</button>
-                                        <button class="stock-btn stock-btn-minus" onclick="adjustStock('${productId}', '${catId}', -1)">-</button>
+                                        <button class="stock-btn stock-btn-plus" onclick="adjustStock('${productId}', '${catId}', 1)" title="Add Stock">+</button>
+                                        <button class="stock-btn stock-btn-minus" onclick="adjustStock('${productId}', '${catId}', -1)" title="Remove Stock">-</button>
                                     </div>
                                 </div>
                             `;
@@ -1384,20 +1362,27 @@
                         <div class="product-card">
                             <div class="product-header">
                                 <div class="product-name">
-                                    <span>${product.emoji}</span>
-                                    <span>${product.name}</span>
+                                    <span>${productEmoji}</span>
+                                    <span>${productName}</span>
                                 </div>
-                                <div>
-                                    <button class="btn btn-primary" onclick="openAddCategoryModal('${productId}')">➕ Add Category</button>
-                                    <button class="action-btn action-btn-delete" onclick="deleteProduct('${productId}')">🗑️ Delete</button>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <button class="btn btn-primary" onclick="openAddCategoryModal('${productId}')">
+                                        ➕ Add Category
+                                    </button>
+                                    <button class="action-btn action-btn-delete" onclick="deleteProduct('${productId}')">
+                                        🗑️ Delete
+                                    </button>
                                 </div>
                             </div>
-                            ${categoriesHTML || '<div class="empty-state"><div class="empty-text">No categories yet</div></div>'}
+                            ${categoriesHTML || '<div class="empty-state" style="padding: 30px;"><div class="empty-text">No categories yet. Click "Add Category" to start.</div></div>'}
                         </div>
                     `;
                     
                     container.innerHTML += card;
                 });
+            }).catch(error => {
+                console.error('Error loading products:', error);
+                showToast('❌ Error loading products: ' + error.message, 'error');
             });
         }
 
@@ -1453,9 +1438,8 @@
                 sales.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 
                 sales.forEach(sale => {
-                    const priceDisplay = isOwner 
-                        ? `$${sale.sellPrice}`
-                        : `<span class="price-hidden">Hidden</span>`;
+                    // SHOW PRICE FOR EVERYONE (Admins can see prices)
+                    const priceDisplay = `$${parseFloat(sale.sellPrice || 0).toFixed(2)}`;
                     
                     const row = `
                         <tr>
@@ -1464,8 +1448,8 @@
                             <td>${sale.categoryIcon} ${sale.categoryName}</td>
                             <td>${sale.accountEmail}</td>
                             <td><span class="badge badge-info">${sale.soldBy}</span></td>
-                            <td>${priceDisplay}</td>
-                            <td><strong style="color: var(--success);">$${sale.adminCommission.toFixed(2)}</strong></td>
+                            <td><strong style="color: var(--primary);">${priceDisplay}</strong></td>
+                            <td><strong style="color: var(--success);">$${parseFloat(sale.adminCommission || 0).toFixed(2)}</strong></td>
                         </tr>
                     `;
                     tbody.innerHTML += row;
@@ -1491,36 +1475,65 @@
                     return;
                 }
                 
+                const promises = [];
                 snapshot.forEach(child => {
                     const admin = child.val();
                     
-                    database.ref('sales').orderByChild('soldBy').equalTo(admin.username).once('value', salesSnapshot => {
-                        let salesCount = 0;
-                        let commission = 0;
-                        
-                        salesSnapshot.forEach(saleChild => {
-                            const sale = saleChild.val();
-                            if (!sale.paid) {
-                                salesCount++;
-                                if (sale.adminCommission) commission += parseFloat(sale.adminCommission);
-                            }
+                    const promise = database.ref('sales').orderByChild('soldBy').equalTo(admin.username).once('value')
+                        .then(salesSnapshot => {
+                            let salesCount = 0;
+                            let commission = 0;
+                            
+                            salesSnapshot.forEach(saleChild => {
+                                const sale = saleChild.val();
+                                if (!sale.paid) {
+                                    salesCount++;
+                                    if (sale.adminCommission) commission += parseFloat(sale.adminCommission);
+                                }
+                            });
+                            
+                            return {
+                                username: admin.username,
+                                name: admin.name,
+                                salesCount,
+                                commission
+                            };
                         });
-                        
-                        if (salesCount > 0) {
+                    
+                    promises.push(promise);
+                });
+                
+                Promise.all(promises).then(results => {
+                    let hasPendingPayouts = false;
+                    
+                    results.forEach(data => {
+                        if (data.salesCount > 0) {
+                            hasPendingPayouts = true;
                             const row = `
                                 <tr>
-                                    <td><strong>${admin.username}</strong></td>
-                                    <td>${admin.name}</td>
-                                    <td>${salesCount}</td>
-                                    <td><strong style="color: var(--success); font-size: 1.2em;">$${commission.toFixed(2)}</strong></td>
+                                    <td><strong>${data.username}</strong></td>
+                                    <td>${data.name}</td>
+                                    <td>${data.salesCount}</td>
+                                    <td><strong style="color: var(--success); font-size: 1.2em;">$${data.commission.toFixed(2)}</strong></td>
                                     <td>
-                                        <button class="btn btn-success" onclick="payAdmin('${admin.username}')">💸 Pay</button>
+                                        <button class="btn btn-success" onclick="payAdmin('${data.username}')">💸 Pay</button>
                                     </td>
                                 </tr>
                             `;
                             tbody.innerHTML += row;
                         }
                     });
+                    
+                    if (!hasPendingPayouts) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-icon">💸</div>
+                                    <div class="empty-text">No pending payouts</div>
+                                </td>
+                            </tr>
+                        `;
+                    }
                 });
             });
             
@@ -1644,26 +1657,21 @@
                 const productId = document.getElementById('categoryProductId').value;
                 const name = document.getElementById('categoryName').value.trim();
                 const icon = document.getElementById('categoryIcon').value.trim();
+                const sellPrice = parseFloat(document.getElementById('categorySellPrice').value);
+                const buyCost = parseFloat(document.getElementById('categoryBuyCost').value);
                 const stock = parseInt(document.getElementById('categoryStock').value);
+                const profit = sellPrice - buyCost;
                 
                 const categoryData = {
                     name,
                     icon,
+                    sellPrice,
+                    buyCost,
+                    profit,
                     stock,
                     addedBy: currentUser,
                     addedAt: getCurrentDateTime()
                 };
-                
-                // Owner adds prices
-                if (isOwner) {
-                    const sellPrice = parseFloat(document.getElementById('categorySellPrice').value);
-                    const buyCost = parseFloat(document.getElementById('categoryBuyCost').value);
-                    const profit = sellPrice - buyCost;
-                    
-                    categoryData.sellPrice = sellPrice;
-                    categoryData.buyCost = buyCost;
-                    categoryData.profit = profit;
-                }
                 
                 database.ref(`products/${productId}/categories`).push(categoryData).then(() => {
                     showToast(`✅ Category ${icon} ${name} added!`, 'success');
@@ -1690,12 +1698,12 @@
                 Promise.all([
                     database.ref(`products/${productId}`).once('value'),
                     database.ref(`products/${productId}/categories/${categoryId}`).once('value'),
-                    database.ref(`admins/${currentUser}`).once('value')
+                    isAdmin ? database.ref(`admins/${currentUser}`).once('value') : Promise.resolve(null)
                 ]).then(([productSnap, categorySnap, adminSnap]) => {
                     const product = productSnap.val();
                     const category = categorySnap.val();
                     
-                    if (category.stock <= 0) {
+                    if (!category || category.stock <= 0) {
                         showToast('❌ Out of stock!', 'error');
                         return;
                     }
@@ -1704,7 +1712,7 @@
                     let commissionRate = 0;
                     if (isOwner) {
                         commissionRate = 0; // Owner doesn't earn commission
-                    } else if (adminSnap.exists()) {
+                    } else if (adminSnap && adminSnap.exists()) {
                         commissionRate = adminSnap.val().commission;
                     }
                     
@@ -1738,6 +1746,7 @@
                         document.getElementById('recordSaleForm').reset();
                         loadProducts();
                         loadSales();
+                        
                         if (isOwner) {
                             loadOwnerDashboard();
                         } else {
@@ -1777,17 +1786,18 @@
                 const admin = snapshot.val();
                 
                 const newName = prompt('Enter new name:', admin.name);
-                const newCommission = prompt('Enter new commission %:', admin.commission);
+                if (!newName) return;
                 
-                if (newName && newCommission) {
-                    database.ref(`admins/${username}`).update({
-                        name: newName,
-                        commission: parseFloat(newCommission)
-                    }).then(() => {
-                        showToast('✅ Admin updated!', 'success');
-                        loadAdmins();
-                    });
-                }
+                const newCommission = prompt('Enter new commission %:', admin.commission);
+                if (!newCommission) return;
+                
+                database.ref(`admins/${username}`).update({
+                    name: newName,
+                    commission: parseFloat(newCommission)
+                }).then(() => {
+                    showToast('✅ Admin updated!', 'success');
+                    loadAdmins();
+                });
             });
         }
 
@@ -1804,21 +1814,28 @@
 
         // Pay Admin
         function payAdmin(username) {
-            if (!confirm(`Mark all sales by ${username} as paid?`)) return;
+            if (!confirm(`Mark all unpaid sales by ${username} as paid?`)) return;
             
             database.ref('sales').orderByChild('soldBy').equalTo(username).once('value', snapshot => {
                 const updates = {};
+                let count = 0;
                 
                 snapshot.forEach(child => {
                     if (!child.val().paid) {
                         updates[`sales/${child.key}/paid`] = true;
                         updates[`sales/${child.key}/paidAt`] = getCurrentDateTime();
                         updates[`sales/${child.key}/paidBy`] = currentUser;
+                        count++;
                     }
                 });
                 
+                if (count === 0) {
+                    showToast('❌ No pending payments for this admin!', 'warning');
+                    return;
+                }
+                
                 database.ref().update(updates).then(() => {
-                    showToast(`✅ ${username} has been paid!`, 'success');
+                    showToast(`✅ ${username} has been paid! (${count} sales marked as paid)`, 'success');
                     loadPayoutData();
                     loadOwnerDashboard();
                 });
@@ -1914,20 +1931,7 @@
         // Format DateTime for Display
         function formatDateTime(datetime) {
             if (!datetime) return 'N/A';
-            
-            try {
-                const date = new Date(datetime);
-                const year = date.getUTCFullYear();
-                const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-                const day = String(date.getUTCDate()).padStart(2, '0');
-                const hours = String(date.getUTCHours()).padStart(2, '0');
-                const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-                const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-                
-                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            } catch (e) {
-                return datetime;
-            }
+            return datetime;
         }
 
         // Logout
