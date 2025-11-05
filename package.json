@@ -1,0 +1,53 @@
+{
+  "name": "maison-etoile-sales-tracker",
+  "version": "1.0.0",
+  "description": "A complete, real-time sales tracking system for managing subscription accounts with automatic commission calculation and payout management.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx live-server --port=8000 --open=index.html",
+    "dev": "npx live-server --port=8000 --open=index.html --watch=.",
+    "deploy": "gh-pages -d .",
+    "build": "echo 'No build needed - static HTML'",
+    "test": "echo 'No tests configured'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adeebaabkhan/abd.git"
+  },
+  "keywords": [
+    "sales-tracker",
+    "commission-calculator",
+    "firebase",
+    "realtime-database",
+    "subscription-management",
+    "payout-system",
+    "github-pages",
+    "netflix",
+    "capcut",
+    "spotify",
+    "digital-sales"
+  ],
+  "author": {
+    "name": "Adeebaabkhan",
+    "url": "https://github.com/Adeebaabkhan"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Adeebaabkhan/abd/issues"
+  },
+  "homepage": "https://adeebaabkhan.github.io/abd/",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "gh-pages": "^6.1.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 1%",
+    "not dead"
+  ]
+}
