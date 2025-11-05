@@ -1,0 +1,686 @@
+# 🌟 Maison Étoile - Digital Sales Tracker
+
+> A complete, real-time sales tracking system for managing subscription accounts with automatic commission calculation and payout management.
+
+**Live Demo:** [https://adeebaabkhan.github.io/abd/](https://adeebaabkhan.github.io/abd/)
+
+**Created:** 2025-01-05 13:35:37 UTC  
+**Author:** @Adeebaabkhan  
+**Version:** 1.0.0
+
+---
+
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [Demo Accounts](#-demo-accounts)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Firebase Setup](#-firebase-setup)
+- [File Structure](#-file-structure)
+- [User Roles](#-user-roles)
+- [How It Works](#-how-it-works)
+- [Screenshots](#-screenshots)
+- [Deployment](#-deployment)
+- [Troubleshooting](#-troubleshooting)
+- [Future Enhancements](#-future-enhancements)
+
+---
+
+## ✨ Features
+
+### 🎨 **15+ Beautiful Color Themes**
+- 🟣 Purple (Default)
+- 🔵 Light Blue
+- 💙 Deep Blue
+- 🌸 Rose Pink
+- 🍇 Violet
+- 🌊 Teal
+- 🍊 Coral
+- 💚 Mint Green
+- ❤️ Red
+- 🖤 Dark Purple
+- 🌈 Rainbow
+- And more!
+
+### 📦 **Smart Product Management**
+- **Netflix 🎬** - Solo 👤 or Shared 🤝 options
+- **CapCut 🎬** - Solo 👤 or Shared 🤝 options
+- **Spotify 🎵** - Single category
+- **Quizlet 📚** - Single category
+- **Unlimited Custom Products** - Add any product with custom emoji
+- **Duration Options**: 1 Month, 3 Months, 6 Months, 1 Year, Custom
+- **Real-time Stock Management** - All admins see live updates
+- **Low Stock Alerts** - Automatic warnings when stock < 5
+
+### 💰 **Sales Recording System**
+```
+Record Sale:
+├── Product: Netflix 🎬 1 Month - Solo 👤
+├── Account Sold: netflix_acc_15@email.com
+├── Price: ₱200.00 (auto-filled, locked)
+├── Profit: ₱50.00 (auto-calculated)
+├── Commission: ₱10.00 (20% for Aab) ✅ INSTANT
+├── Sold By: Aab
+└── Date: 2025-01-05 13:35:37
+```
+
+**Features:**
+- ✅ Instant commission calculation based on admin %
+- ✅ Track "Account Sold" (email/username given to customer)
+- ✅ Edit account details anytime
+- ✅ All admins see sales in real-time
+- ✅ Automatic stock reduction
+
+### 💸 **Auto-Reset Payout System**
+
+**Before Payout:**
+```
+Aab Dashboard:
+- Sales: 25
+- Revenue: ₱3,500.00
+- Commission: ₱350.00 (Pending)
+```
+
+**Owner Clicks "Mark as Paid":**
+```
+1. Creates payout record: ₱350.00 (25 sales)
+2. Archives all sales to payout history
+3. Resets commission to ₱0.00
+4. Fresh start for new cycle!
+```
+
+**After Payout:**
+```
+Aab Dashboard:
+- Sales: 0
+- Revenue: ₱0.00
+- Commission: ₱0.00 (Fresh!)
+
+Payout History:
+✅ 2025-01-05 - ₱350.00 paid (25 sales)
+```
+
+### 📊 **Analytics & Stats**
+
+**6 Dashboard Cards:**
+1. 💰 **Total Sales** - Count of all sales
+2. 📦 **Products Sold** - Items sold
+3. 💵 **Total Revenue** - Money generated
+4. 📊 **Total Stock** - Available inventory
+5. 💸 **Your Commission** - Pending payout
+6. 🎯 **Total Profit** - Net earnings
+
+### 👥 **User Management**
+
+**Owner Capabilities:**
+- ✅ Add unlimited admins
+- ✅ Set custom commission % per admin
+- ✅ Edit admin details (name, password, commission)
+- ✅ Delete admin accounts
+- ✅ View all admin activity
+- ✅ Mark payouts as paid
+- ✅ Full access to everything
+
+**Admin Capabilities:**
+- ✅ Record sales
+- ✅ Edit account sold details
+- ✅ Manage stock (+/-)
+- ✅ Add new products
+- ✅ View their own sales & commission
+- ✅ View payout history
+- ❌ Cannot change prices
+- ❌ Cannot add/delete other admins
+- ❌ Cannot mark payouts as paid
+
+---
+
+## 🔐 Demo Accounts
+
+| Username | Password | Role | Commission | Avatar |
+|----------|----------|------|------------|--------|
+| **kirs** | kirs123 | 👑 Owner | 100% | 👑 |
+| **aab** | meow123 | 🔧 Admin | 20% | 🐱 |
+| **barbie** | meow123 | 🔧 Admin | 15% | 💖 |
+| **shee** | meow123 | 🔧 Admin | 25% | 🌸 |
+
+**Login URL:** [https://adeebaabkhan.github.io/abd/](https://adeebaabkhan.github.io/abd/)
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose | Version |
+|------------|---------|---------|
+| **HTML5** | Structure | Latest |
+| **CSS3** | Styling & Themes | Latest |
+| **JavaScript (ES6+)** | Logic | Latest |
+| **Firebase Realtime Database** | Data Storage | 10.7.1 |
+| **Firebase SDK** | Backend Integration | 10.7.1 |
+| **GitHub Pages** | Hosting | Free |
+
+**Why Firebase?**
+- ✅ Real-time sync between all admins
+- ✅ Cloud storage (never lose data)
+- ✅ Free tier: 1GB storage, 10GB/month bandwidth
+- ✅ No server setup required
+- ✅ Secure & scalable
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Use Existing Deployment (Recommended)
+
+1. **Access the live app:**
+   ```
+   https://adeebaabkhan.github.io/abd/
+   ```
+
+2. **Login with demo account:**
+   - Username: `kirs`
+   - Password: `kirs123`
+
+3. **Start using immediately!**
+
+### Option 2: Deploy Your Own
+
+1. **Clone this repository:**
+   ```bash
+   git clone https://github.com/Adeebaabkhan/abd.git
+   cd abd
+   ```
+
+2. **Setup Firebase (see next section)**
+
+3. **Update Firebase config in `app.js`:**
+   ```javascript
+   const firebaseConfig = {
+       apiKey: "YOUR_API_KEY",
+       authDomain: "your-project.firebaseapp.com",
+       databaseURL: "https://your-project.firebaseio.com",
+       projectId: "your-project-id",
+       storageBucket: "your-project.appspot.com",
+       messagingSenderId: "123456789",
+       appId: "your-app-id"
+   };
+   ```
+
+4. **Test locally:**
+   - Use Live Server extension in VS Code
+   - Or run: `python -m http.server 8000`
+   - Open: `http://localhost:8000`
+
+5. **Deploy to GitHub Pages:**
+   - Push to GitHub
+   - Enable GitHub Pages in Settings
+   - Access at: `https://yourusername.github.io/reponame/`
+
+---
+
+## 🔥 Firebase Setup
+
+### Step 1: Create Firebase Project
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click **"Add project"**
+3. Enter project name: `sales-tracker`
+4. Disable Google Analytics (optional)
+5. Click **"Create project"**
+
+### Step 2: Enable Realtime Database
+
+1. Click **"Realtime Database"** from left menu
+2. Click **"Create Database"**
+3. Select location: **United States** (or closest)
+4. Start in **TEST MODE**
+5. Click **"Enable"**
+
+### Step 3: Update Security Rules
+
+Go to **"Rules"** tab and paste:
+
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+```
+
+Click **"Publish"**
+
+⚠️ **Note:** This is for development. For production, implement proper security!
+
+### Step 4: Get Configuration Keys
+
+1. Click ⚙️ **Project Settings**
+2. Scroll to **"Your apps"**
+3. Click **</> Web icon**
+4. Register app: `sales-tracker-web`
+5. Copy the `firebaseConfig` object
+6. Paste in `app.js` (line 8)
+
+### Step 5: Test Connection
+
+1. Open `index.html` in browser
+2. Login with: `kirs / kirs123`
+3. Check Firebase Console > Realtime Database
+4. You should see `users` node created!
+
+---
+
+## 📁 File Structure
+
+```
+abd/
+├── index.html              # Login page
+├── dashboard.html          # Main sales tracker dashboard
+├── app.js                  # All JavaScript logic & Firebase integration
+├── firebase-config.js      # Firebase setup helper (optional)
+├── README.md              # This documentation
+├── .gitignore             # Git ignore file
+└── assets/                # (Optional) Images, icons
+    ├── logo.png
+    └── favicon.ico
+```
+
+### File Descriptions
+
+| File | Size | Purpose |
+|------|------|---------|
+| `index.html` | ~8 KB | Beautiful login page with animations |
+| `dashboard.html` | ~15 KB | Main dashboard with 4 tabs |
+| `app.js` | ~35 KB | Complete logic (products, sales, payouts, admins) |
+| `firebase-config.js` | ~5 KB | Setup instructions & helpers |
+| `README.md` | ~12 KB | Complete documentation |
+
+**Total Size:** ~75 KB (Ultra lightweight!)
+
+---
+
+## 👥 User Roles
+
+### 👑 Owner (Kirs)
+
+**Full Control:**
+```
+✅ Everything an Admin can do
+✅ Set product prices
+✅ Add/edit/delete admins
+✅ Set commission % for each admin
+✅ Mark payouts as paid (reset system)
+✅ Delete any sales record
+✅ View all admin activity
+```
+
+**Dashboard View:**
+- All 6 stats cards
+- Products tab (with price control)
+- Sales tab (full access)
+- Payouts tab (mark as paid button)
+- **Admins tab** (exclusive)
+
+### 🔧 Admin (Aab, Barbie, Shee)
+
+**Limited Control:**
+```
+✅ Record sales (instant commission)
+✅ Edit "Account Sold" field
+✅ Add/update stock quantities
+✅ Add new products (owner sets price)
+✅ View their own sales & commission
+✅ View payout history
+❌ Cannot change prices
+❌ Cannot add/delete other admins
+❌ Cannot mark payouts as paid
+```
+
+**Dashboard View:**
+- All 6 stats cards (personalized)
+- Products tab (no price control)
+- Sales tab (limited edit)
+- Payouts tab (view only)
+
+---
+
+## 🎯 How It Works
+
+### 1️⃣ Owner Adds Products
+
+```javascript
+Product Setup:
+├── Name: Netflix
+├── Emoji: 🎬
+├── Duration: 1 Month
+├── Category: Solo 👤
+├── Price: ₱200.00
+├── Cost: ₱150.00
+├── Profit: ₱50.00 (auto)
+└── Stock: 10
+```
+
+### 2️⃣ Owner Sets Admin Commissions
+
+```javascript
+Admin Setup:
+├── Aab: 20% commission
+├── Barbie: 15% commission
+└── Shee: 25% commission
+```
+
+### 3️⃣ Admin Records Sale
+
+```javascript
+Sale Recording:
+├── Product: Netflix 🎬 Solo 👤
+├── Account: netflix_acc_12@email.com
+├── Price: ₱200.00 (auto-filled)
+├── Profit: ₱50.00
+├── Admin Commission: ₱10.00 (20% of ₱50)
+├── Owner Commission: ₱40.00 (80% of ₱50)
+└── Stock: 10 → 9 (auto-reduced)
+```
+
+### 4️⃣ Commission Tracking
+
+```javascript
+Aab's Dashboard:
+├── Sales This Cycle: 15
+├── Revenue Generated: ₱3,000.00
+└── Pending Commission: ₱300.00
+```
+
+### 5️⃣ Payout & Reset
+
+```javascript
+Owner Clicks "Mark as Paid":
+├── Creates payout record
+├── Amount: ₱300.00
+├── Sales Count: 15
+├── Period: 2025-01-01 to 2025-01-05
+├── Archives 15 sales to history
+├── Resets Aab's commission to ₱0.00
+└── Fresh start for new cycle!
+```
+
+---
+
+## 📸 Screenshots
+
+### Login Page
+```
+┌─────────────────────────────────────┐
+│     🌟 Maison Étoile                │
+│     Digital Sales Tracker           │
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │ 👤 Username                 │   │
+│  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │ 🔒 Password                 │   │
+│  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │        LOGIN                │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  🔑 Demo Accounts:                  │
+│  Owner: kirs / kirs123              │
+│  Admin: aab / meow123               │
+└─────────────────────────────────────┘
+```
+
+### Dashboard View
+```
+┌─────────────────────────────────────────────────┐
+│ 🌟 Maison Étoile    [Theme ▼] [🚪 Logout]      │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌───┐ │
+│ │ 💰  │ │ 📦  │ │ 💵  │ │ 📊  │ │ 💸  │ │🎯 │ │
+│ │Sales│ │Sold │ │Rev. │ │Stock│ │Comm.│ │Pro│ │
+│ │ 125 │ │ 125 │ │5.2K │ │ 340 │ │ 750 │ │2K │ │
+│ └─────┘ └─────┘ └─────┘ └─────┘ └─────┘ └───┘ │
+│                                                 │
+│ [📦 Products] [💰 Sales] [💸 Payouts] [👥 Admins]│
+│                                                 │
+│ ┌─────────────────────────────────────────────┐│
+│ │ 📦 Products & Stock        [+ Add Product] ││
+│ │                                             ││
+│ │ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐           ││
+│ │ │ 🎬  │ │ 🎬  │ │ 🎵  │ │ 📚  │           ││
+│ │ │Netf.│ │CapC.│ │Spot.│ │Quiz.│           ││
+│ │ │Solo │ │Share│ │     │ │     │           ││
+│ │ │  10 │ │  15 │ │  20 │ │   8 │           ││
+│ │ │₱200 │ │₱120 │ │₱150 │ │₱100 │           ││
+│ │ │[+][-│ │[+][-│ │[+][-│ │[+][-│           ││
+│ │ └─────┘ └─────┘ └─────┘ └─────┘           ││
+│ └─────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## 🌐 Deployment
+
+### GitHub Pages (Recommended)
+
+1. **Push files to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Add sales tracker"
+   git push origin main
+   ```
+
+2. **Enable GitHub Pages:**
+   - Go to repository **Settings**
+   - Click **Pages** in left menu
+   - Source: **Deploy from a branch**
+   - Branch: **main** (or master)
+   - Folder: **/ (root)**
+   - Click **Save**
+
+3. **Wait 1-2 minutes for deployment**
+
+4. **Access your app:**
+   ```
+   https://yourusername.github.io/reponame/
+   ```
+
+### Custom Domain (Optional)
+
+1. Buy domain from Namecheap, GoDaddy, etc.
+2. Add CNAME record pointing to: `yourusername.github.io`
+3. In GitHub Pages settings, add custom domain
+4. Enable HTTPS (automatic)
+
+---
+
+## 🐛 Troubleshooting
+
+### ❌ Login Not Working
+
+**Problem:** Can't login with demo accounts
+
+**Solutions:**
+1. Check browser console for errors (F12)
+2. Verify Firebase config is correct in `app.js`
+3. Ensure Firebase Realtime Database is enabled
+4. Check database rules allow read/write
+5. Try different browser or incognito mode
+
+### ❌ Data Not Syncing
+
+**Problem:** Changes don't appear in real-time
+
+**Solutions:**
+1. Check internet connection
+2. Verify Firebase database URL is correct
+3. Open Firebase Console and check if data is being written
+4. Hard refresh browser (Ctrl + Shift + R)
+5. Check browser console for permission errors
+
+### ❌ Firebase Permission Denied
+
+**Problem:** "Permission denied" errors
+
+**Solutions:**
+1. Go to Firebase Console > Realtime Database > Rules
+2. Make sure rules allow read/write:
+   ```json
+   {
+     "rules": {
+       ".read": true,
+       ".write": true
+     }
+   }
+   ```
+3. Click "Publish"
+4. Wait 30 seconds for rules to update
+
+### ❌ GitHub Pages Not Loading
+
+**Problem:** 404 error on GitHub Pages URL
+
+**Solutions:**
+1. Check repository is public
+2. Verify files are in root directory (not subfolder)
+3. Ensure `index.html` exists (case-sensitive)
+4. Wait 5-10 minutes for initial deployment
+5. Clear browser cache
+
+### ❌ Commission Not Calculating
+
+**Problem:** Commission shows ₱0.00
+
+**Solutions:**
+1. Verify admin has commission % set in users table
+2. Check product has profit (price > cost)
+3. Refresh Firebase data
+4. Check browser console for calculation errors
+
+---
+
+## 🔮 Future Enhancements
+
+### Planned Features
+
+- [ ] **Export Data** - Download sales as CSV/Excel
+- [ ] **Advanced Analytics** - Charts and graphs (Chart.js)
+- [ ] **Email Notifications** - Payout reminders
+- [ ] **Mobile App** - Progressive Web App (PWA)
+- [ ] **Multi-currency** - Support USD, EUR, etc.
+- [ ] **Invoice Generator** - Auto-generate receipts
+- [ ] **Customer Database** - Track repeat customers
+- [ ] **Inventory Alerts** - Email when stock low
+- [ ] **Dark Mode** - Full dark theme
+- [ ] **Multi-language** - English/Filipino/Spanish
+
+### Community Contributions
+
+Want to contribute? Here's how:
+
+1. **Fork this repository**
+2. **Create feature branch:** `git checkout -b feature/amazing-feature`
+3. **Commit changes:** `git commit -m 'Add amazing feature'`
+4. **Push to branch:** `git push origin feature/amazing-feature`
+5. **Open Pull Request**
+
+---
+
+## 📄 License
+
+This project is **open source** and available under the [MIT License](LICENSE).
+
+```
+MIT License
+
+Copyright (c) 2025 Adeebaabkhan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
+## 👨‍💻 Author
+
+**Adeebaabkhan**
+- GitHub: [@Adeebaabkhan](https://github.com/Adeebaabkhan)
+- Repository: [abd](https://github.com/Adeebaabkhan/abd)
+- Created: 2025-01-05 13:35:37 UTC
+
+---
+
+## 🙏 Acknowledgments
+
+- **Firebase** - For amazing real-time database
+- **GitHub Pages** - For free hosting
+- **Google Fonts** - For beautiful Poppins & Dancing Script fonts
+- **Emoji** - For making UI fun and intuitive
+
+---
+
+## 📞 Support
+
+Need help? Have questions?
+
+1. **Check documentation** - Read this README thoroughly
+2. **Troubleshooting section** - Common issues solved
+3. **Firebase docs** - [firebase.google.com/docs](https://firebase.google.com/docs)
+4. **GitHub Issues** - Report bugs/request features
+
+---
+
+## 🎉 Quick Links
+
+- **Live Demo:** [https://adeebaabkhan.github.io/abd/](https://adeebaabkhan.github.io/abd/)
+- **Repository:** [https://github.com/Adeebaabkhan/abd](https://github.com/Adeebaabkhan/abd)
+- **Firebase Console:** [https://console.firebase.google.com/](https://console.firebase.google.com/)
+- **GitHub Pages Docs:** [https://pages.github.com/](https://pages.github.com/)
+
+---
+
+## 📊 Project Stats
+
+| Metric | Value |
+|--------|-------|
+| **Total Lines of Code** | ~1,500 |
+| **Files** | 5 |
+| **Languages** | HTML, CSS, JavaScript |
+| **Database** | Firebase Realtime |
+| **Hosting** | GitHub Pages (Free) |
+| **Cost** | ₱0 / month |
+| **Setup Time** | ~15 minutes |
+
+---
+
+<div align="center">
+
+### ⭐ If you found this helpful, please star the repository!
+
+**Made with ❤️ by Adeebaabkhan**
+
+**Current UTC Time:** 2025-01-05 13:35:37
+
+</div>
