@@ -304,14 +304,14 @@
             const password = document.getElementById('password').value.trim();
             const errorMessage = document.getElementById('errorMessage');
 
-            // Get users from localStorage
+            // Get users from localStorage (includes owner + all admins)
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             
-            // Find user
+            // Find user by username AND password
             const user = users.find(u => u.username === username && u.password === password);
 
             if (user) {
-                // Store session
+                // Store session with ALL required data
                 const session = {
                     id: user.id,
                     customName: user.customName,
@@ -322,7 +322,7 @@
                 };
                 localStorage.setItem('session', JSON.stringify(session));
                 
-                // Redirect to dashboard
+                // Redirect to multi-user dashboard
                 window.location.href = 'dashboard.html';
             } else {
                 // Show error
